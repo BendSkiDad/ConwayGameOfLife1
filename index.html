@@ -2,18 +2,18 @@
 <html lang="en-US">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Conway's Game of Life - Gene Hyde</title>
-    <link rel="stylesheet" href="styles.css" type="text/css" media="all">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Conway's Game of Life - Gene Hyde</title>
+  <link rel="stylesheet" href="styles.css" type="text/css" media="all">
 
-    <script type="text/javascript" src="scripts.js" defer></script>
+  <script type="text/javascript" src="scripts.js" defer></script>
 
-    <style>
+  <style>
     td.cell {
       border: 1px solid black;
     }
-    </style>
+  </style>
 </head>
 
 <body>
@@ -21,7 +21,9 @@
     <h1>Conway's Game of Life</h1>
   </header>
   <main>
-    <p>Iteration Count: <div id="iterationCount">1</div></p>
+    <p>Iteration Count:
+    <div id="iterationCount">1</div>
+    </p>
     <p id="board">
       Empty Board
     </p>
@@ -29,6 +31,7 @@
     <input type="button" value="Add Row" onclick="AddRow()"></input>
     <input type="button" value="Add Column" onclick="AddColumn()"></input>
     <input type="button" value="Reset" onclick="Reset()"></input>
+    <input id="btnRun" type="button" value="Run" onclick="Run()"></input>
   </main>
 </body>
 
