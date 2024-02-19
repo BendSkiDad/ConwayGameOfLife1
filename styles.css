@@ -1,0 +1,17 @@
+table {
+    border-spacing: 0px;
+}
+
+.noPadding {
+    padding: 0px;
+}
+
+.cell {
+    border: none;
+    background-color: grey;
+    padding: 0px;
+}
+
+.liveCell {
+    background-color: yellow;
+}

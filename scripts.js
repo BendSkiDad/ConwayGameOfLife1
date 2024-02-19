@@ -56,9 +56,9 @@ function isLiveCellAt(cells, rowIndex, columnIndex) {
 }
 
 function generateHeaderOutputRowFrom(leftColumnIndex, rightColumnIndex) {
-  var headerOutputRow = "<tr>" + "<th>" + "&nbsp" + "</th>";
+  var headerOutputRow = "<tr>" + "<th class='noPadding'>" + "&nbsp" + "</th>";
   for (var i = leftColumnIndex; i <= rightColumnIndex; i++) {
-    headerOutputRow += "<th>" + Math.abs(i % 10) + "</th>";
+      headerOutputRow += "<th class='noPadding'>" + Math.abs(i % 10) + "</th>";
   }
   return headerOutputRow + "</tr>";
 }
@@ -69,13 +69,14 @@ function handleCellClick(tdElement) {
     tdElement.innerHTML = "";
   }
   else {
-    tdElement.setAttribute("live", "true");
-    tdElement.innerHTML = "x";
+      tdElement.setAttribute("live", "true");
+      tdElement.classList.add("liveCell");
+      //tdElement.innerHTML = "x";
   }
 }
 
 function generateRowFrom(liveCells, rowIndex, leftColumnIndex, rightColumnIndex) {
-  var rowText = "<tr>" + "<td>" + "<strong>" + Math.abs(rowIndex % 10) + "</strong>" + "</td>";
+  var rowText = "<tr>" + "<td class='noPadding'>" + "<strong>" + Math.abs(rowIndex % 10) + "</strong>" + "</td>";
   for (var columnIndex = leftColumnIndex; columnIndex <= rightColumnIndex; columnIndex++) {
     var TDElement = document.createElement("td");
     TDElement.setAttribute("rowIndex", rowIndex);
@@ -84,8 +85,8 @@ function generateRowFrom(liveCells, rowIndex, leftColumnIndex, rightColumnIndex)
     TDElement.setAttribute("onclick", "handleCellClick(this)");
     if (isLiveCellAt(liveCells, rowIndex, columnIndex)) {
       TDElement.setAttribute("live", "true");
-      //TDElement.classList.add("liveCell");
-      TDElement.innerHTML = "x";
+      TDElement.classList.add("liveCell");
+      //TDElement.innerHTML = "x";
     }
     else {
       TDElement.setAttribute("live", "false");
