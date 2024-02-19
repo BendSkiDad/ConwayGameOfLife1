@@ -1,0 +1,9 @@
+#################
+## Visual Studio
+#################
+
+## Ignore Visual Studio temporary files, build results, etc.
+
+# User-specific files
+.vs
+
