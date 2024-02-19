@@ -164,7 +164,7 @@ function isLive(cell) {
 
 function Reset() {
   var liveCells = [];
-  document.querySelector("#board").innerHTML = generateBoardFrom(liveCells, 1, 1, 3, 3);
+  document.querySelector("#board").innerHTML = generateBoardFrom(liveCells, 1, 1, 10, 80);
   var iterationCountDiv = document.getElementById("iterationCount");
   iterationCountDiv.textContent = 0;
   if (isRunning) {
