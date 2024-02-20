@@ -1,94 +1,100 @@
 "use strict";
 
+//todo: use filter, map, and reduce where I can
+//todo: disable buttons when running
+//todo: generate html dynamically instead of with strings
+//todo: convert to use revealing module pattern
+
 function LiveCell(rowIndex, columnIndex) {
-  this.rowIndex = rowIndex;
-  this.columnIndex = columnIndex;
+    this.rowIndex = rowIndex;
+    this.columnIndex = columnIndex;
 }
 
 function findMinColumnIndexOf(cells) {
-  var minColumnIndex = cells[0].columnIndex;
-  for (var i = 1; i < cells.length; i++) {
-    if (cells[i].columnIndex < minColumnIndex) {
-      minColumnIndex = cells[i].columnIndex;
+
+    var minColumnIndex = cells[0].columnIndex;
+    for (var i = 1; i < cells.length; i++) {
+        if (cells[i].columnIndex < minColumnIndex) {
+            minColumnIndex = cells[i].columnIndex;
+        }
     }
-  }
-  return minColumnIndex;
+    return minColumnIndex;
 }
 
 function findMinRowIndexOf(cells) {
-  var minRowIndex = cells[0].rowIndex;
-  for (var i = 1; i < cells.length; i++) {
-    if (cells[i].rowIndex < minRowIndex) {
-      minRowIndex = cells[i].rowIndex;
+    var minRowIndex = cells[0].rowIndex;
+    for (var i = 1; i < cells.length; i++) {
+        if (cells[i].rowIndex < minRowIndex) {
+            minRowIndex = cells[i].rowIndex;
+        }
     }
-  }
-  return minRowIndex;
+    return minRowIndex;
 }
 
 function findMaxColumnIndexOf(cells) {
-  var maxColumnIndex = cells[0].columnIndex;
-  for (var i = 1; i < cells.length; i++) {
-    if (cells[i].columnIndex > maxColumnIndex) {
-      maxColumnIndex = cells[i].columnIndex;
+    var maxColumnIndex = cells[0].columnIndex;
+    for (var i = 1; i < cells.length; i++) {
+        if (cells[i].columnIndex > maxColumnIndex) {
+            maxColumnIndex = cells[i].columnIndex;
+        }
     }
-  }
-  return maxColumnIndex;
+    return maxColumnIndex;
 }
 
 function findMaxRowIndexOf(cells) {
-  var maxRowIndex = cells[0].rowIndex;
-  for (var i = 1; i < cells.length; i++) {
-    if (cells[i].rowIndex > maxRowIndex) {
-      maxRowIndex = cells[i].rowIndex;
+    var maxRowIndex = cells[0].rowIndex;
+    for (var i = 1; i < cells.length; i++) {
+        if (cells[i].rowIndex > maxRowIndex) {
+            maxRowIndex = cells[i].rowIndex;
+        }
     }
-  }
-  return maxRowIndex;
+    return maxRowIndex;
 }
 
 function isThereALiveCellAt(liveCells, rowIndex, columnIndex) {
-  for (var i = 0; i < liveCells.length; i++) {
-    if (liveCells[i].rowIndex === rowIndex && liveCells[i].columnIndex === columnIndex) {
-      return true;
+    for (var i = 0; i < liveCells.length; i++) {
+        if (liveCells[i].rowIndex === rowIndex && liveCells[i].columnIndex === columnIndex) {
+            return true;
+        }
     }
-  }
-  return false;
+    return false;
 }
 
-function generateHeaderOutputRowFrom(leftColumnIndex, rightColumnIndex) {
-  var headerOutputRow = "<tr>" + "<th class='noPadding'>" + "&nbsp" + "</th>";
-  for (var i = leftColumnIndex; i <= rightColumnIndex; i++) {
-      headerOutputRow += "<th class='noPadding'>" + Math.abs(i % 10) + "</th>";
-  }
-  return headerOutputRow + "</tr>";
+function generateBoardHeaderRowFrom(leftColumnIndex, rightColumnIndex) {
+    var headerOutputRow = "<tr>" + "<th class='noPadding'>" + "&nbsp" + "</th>";
+    for (var i = leftColumnIndex; i <= rightColumnIndex; i++) {
+        headerOutputRow += "<th class='noPadding'>" + Math.abs(i % 10) + "</th>";
+    }
+    return headerOutputRow + "</tr>";
 }
 
 function generateRowFrom(liveCells, rowIndex, leftColumnIndex, rightColumnIndex) {
-  var rowText = "<tr>" + "<td class='noPadding'>" + "<strong>" + Math.abs(rowIndex % 10) + "</strong>" + "</td>";
-  for (var columnIndex = leftColumnIndex; columnIndex <= rightColumnIndex; columnIndex++) {
-    var TDElement = document.createElement("td");
-    TDElement.setAttribute("rowIndex", rowIndex);
-    TDElement.setAttribute("columnIndex", columnIndex);
-    TDElement.classList.add("cell");
-    TDElement.setAttribute("onclick", "handleCellClick(this)");
-    if (isThereALiveCellAt(liveCells, rowIndex, columnIndex)) {
-      TDElement.setAttribute("live", "");
-      TDElement.classList.add("liveCell");
+    var rowText = "<tr>" + "<td class='noPadding'>" + "<strong>" + Math.abs(rowIndex % 10) + "</strong>" + "</td>";
+    for (var columnIndex = leftColumnIndex; columnIndex <= rightColumnIndex; columnIndex++) {
+        var TDElement = document.createElement("td");
+        TDElement.setAttribute("rowIndex", rowIndex);
+        TDElement.setAttribute("columnIndex", columnIndex);
+        TDElement.classList.add("cell");
+        TDElement.setAttribute("onclick", "handleCellClick(this)");
+        if (isThereALiveCellAt(liveCells, rowIndex, columnIndex)) {
+            TDElement.setAttribute("live", "");
+            TDElement.classList.add("liveCell");
+        }
+        else {
+            TDElement.removeAttribute("live");
+            TDElement.innerHTML = "&nbsp";
+        }
+        rowText += TDElement.outerHTML;
     }
-    else {
-      TDElement.removeAttribute("live");
-      TDElement.innerHTML = "&nbsp";
-    }
-    rowText += TDElement.outerHTML;
-  }
-  return rowText + "</tr>";
+    return rowText + "</tr>";
 }
 
-function generateBoardFrom(liveCells, upperLeftRowIndex, upperLeftColumnIndex, lowerRightRowIndex, lowerRightColumnIndex) {
-  var board = "<table>" + generateHeaderOutputRowFrom(upperLeftColumnIndex, lowerRightColumnIndex);
-  for (var rowIndex = upperLeftRowIndex; rowIndex <= lowerRightRowIndex; rowIndex++) {
-    board += generateRowFrom(liveCells, rowIndex, upperLeftColumnIndex, lowerRightColumnIndex);
-  }
-  return board + "</table>";
+function generateBoardFrom(liveCells, minAndMaxRowAndColumnIndexes) {
+    var board = "<table>" + generateBoardHeaderRowFrom(minAndMaxRowAndColumnIndexes.minColumnIndex, minAndMaxRowAndColumnIndexes.maxColumnIndex);
+    for (var rowIndex = minAndMaxRowAndColumnIndexes.minRowIndex; rowIndex <= minAndMaxRowAndColumnIndexes.maxRowIndex; rowIndex++) {
+        board += generateRowFrom(liveCells, rowIndex, minAndMaxRowAndColumnIndexes.minColumnIndex, minAndMaxRowAndColumnIndexes.maxColumnIndex);
+    }
+    return board + "</table>";
 }
 
 function getRowIndexFrom(cellTDElement) {
@@ -101,7 +107,8 @@ function getColumnIndexFrom(cellTDElement) {
     return columnIndex;
 }
 
-function DeriveLiveCellsFrom(cellTDElements) {
+function DeriveLiveCellsBoard() {
+    var cellTDElements = document.querySelectorAll(".cell");
     var liveCells = new Array();
     for (var i = 0; i < cellTDElements.length; i++) {
         var cellTDElement = cellTDElements[i];
@@ -116,20 +123,20 @@ function DeriveLiveCellsFrom(cellTDElements) {
 }
 
 function numberOfLiveNeighbors(rowIndex, columnIndex, liveCells) {
-  var count = 0;
-  for (var i = 0; i < liveCells.length; i++) {
-    var liveCell = liveCells[i];
-    if (
-      liveCell.rowIndex >= rowIndex - 1
-      && liveCell.rowIndex <= rowIndex + 1
-      && liveCell.columnIndex >= columnIndex - 1
-      && liveCell.columnIndex <= columnIndex + 1
-      && !(liveCell.rowIndex === rowIndex && liveCell.columnIndex === columnIndex)
-    ) {
-      count++;
+    var count = 0;
+    for (var i = 0; i < liveCells.length; i++) {
+        var liveCell = liveCells[i];
+        if (
+            liveCell.rowIndex >= rowIndex - 1
+            && liveCell.rowIndex <= rowIndex + 1
+            && liveCell.columnIndex >= columnIndex - 1
+            && liveCell.columnIndex <= columnIndex + 1
+            && !(liveCell.rowIndex === rowIndex && liveCell.columnIndex === columnIndex)
+        ) {
+            count++;
+        }
     }
-  }
-  return count;
+    return count;
 }
 
 function DeriveNewLiveCellsFrom(liveCells) {
@@ -174,19 +181,26 @@ function Stop() {
 }
 
 function Reset() {
-  var liveCells = [];
-  document.querySelector("#board").innerHTML = generateBoardFrom(liveCells, 1, 1, 10, 80);
-  var iterationCountDiv = document.getElementById("iterationCount");
-  iterationCountDiv.textContent = 0;
-  if (isRunning) {
-    Stop();
-  }
+    var liveCells = [];
+    var minAndMaxRowAndColumnIndexes = {
+        minRowIndex: 1,
+        minColumnIndex: 1,
+        maxRowIndex: 10,
+        maxColumnIndex: 80
+    };
+
+    document.querySelector("#board").innerHTML = generateBoardFrom(liveCells, minAndMaxRowAndColumnIndexes);
+    var iterationCountDiv = document.getElementById("iterationCount");
+    iterationCountDiv.textContent = 0;
+    if (isRunning) {
+        Stop();
+    }
 }
 
 function UpdateIterationCount() {
-  var iterationCountDiv = document.getElementById("iterationCount");
-  var iterationCount = Number(iterationCountDiv.textContent);
-  iterationCountDiv.textContent = iterationCount + 1;
+    var iterationCountDiv = document.getElementById("iterationCount");
+    var iterationCount = Number(iterationCountDiv.textContent);
+    iterationCountDiv.textContent = iterationCount + 1;
 }
 
 function deriveMinAndMaxRowAndColumnIndexesFromBoard() {
@@ -210,33 +224,29 @@ function deriveMinAndMaxRowAndColumnIndexesFromBoard() {
 }
 
 function UpdateBoard() {
-    var minAndMaxRowAndColumnIndexes = deriveMinAndMaxRowAndColumnIndexesFromBoard();
-
-    var cellTDElements = document.querySelectorAll(".cell");
-    var liveCells = DeriveLiveCellsFrom(cellTDElements);
-
+    var liveCells = DeriveLiveCellsBoard();
     if (liveCells.length === 0) {
         Reset();
         return;
     }
-
     var newLiveCells = DeriveNewLiveCellsFrom(liveCells);
-
     if (newLiveCells.length === 0) {
         Reset();
         return;
     }
 
-    var upperLeftRowIndex = Math.min(minAndMaxRowAndColumnIndexes.minRowIndex, findMinRowIndexOf(newLiveCells));
-    var upperLeftColumnIndex = Math.min(minAndMaxRowAndColumnIndexes.minColumnIndex, findMinColumnIndexOf(newLiveCells));
-    var lowerRightRowIndex = Math.max(minAndMaxRowAndColumnIndexes.maxRowIndex, findMaxRowIndexOf(newLiveCells));
-    var lowerRightColumnIndex = Math.max(minAndMaxRowAndColumnIndexes.maxColumnIndex, findMaxColumnIndexOf(newLiveCells));
-    document.querySelector("#board").innerHTML = generateBoardFrom(newLiveCells, upperLeftRowIndex, upperLeftColumnIndex, lowerRightRowIndex, lowerRightColumnIndex);
+    var minAndMaxRowAndColumnIndexes = deriveMinAndMaxRowAndColumnIndexesFromBoard();
+    //expand the board if necessary
+    minAndMaxRowAndColumnIndexes.minRowIndex = Math.min(minAndMaxRowAndColumnIndexes.minRowIndex, findMinRowIndexOf(newLiveCells));
+    minAndMaxRowAndColumnIndexes.minColumnIndex = Math.min(minAndMaxRowAndColumnIndexes.minColumnIndex, findMinColumnIndexOf(newLiveCells));
+    minAndMaxRowAndColumnIndexes.maxRowIndex = Math.max(minAndMaxRowAndColumnIndexes.maxRowIndex, findMaxRowIndexOf(newLiveCells));
+    minAndMaxRowAndColumnIndexes.maxColumnIndex = Math.max(minAndMaxRowAndColumnIndexes.maxColumnIndex, findMaxColumnIndexOf(newLiveCells));
+    document.querySelector("#board").innerHTML = generateBoardFrom(newLiveCells, minAndMaxRowAndColumnIndexes);
 }
 
 function advanceAStep() {
-  UpdateIterationCount();
-  UpdateBoard();
+    UpdateIterationCount();
+    UpdateBoard();
 }
 
 function handleAdvanceAStepClick() {
@@ -244,17 +254,17 @@ function handleAdvanceAStepClick() {
 }
 
 function handleAddRowClick() {
+    var liveCells = DeriveLiveCellsBoard();
     var minAndMaxRowAndColumnIndexes = deriveMinAndMaxRowAndColumnIndexesFromBoard();
-    var cellTDElements = document.querySelectorAll(".cell");
-    var liveCells = DeriveLiveCellsFrom(cellTDElements);
-    document.querySelector("#board").innerHTML = generateBoardFrom(liveCells, minAndMaxRowAndColumnIndexes.minRowIndex, minAndMaxRowAndColumnIndexes.minColumnIndex, minAndMaxRowAndColumnIndexes.maxRowIndex + 1, minAndMaxRowAndColumnIndexes.maxColumnIndex);
+    minAndMaxRowAndColumnIndexes.maxRowIndex += 1;
+    document.querySelector("#board").innerHTML = generateBoardFrom(liveCells, minAndMaxRowAndColumnIndexes);
 }
 
 function handleAddColumnClick() {
+    var liveCells = DeriveLiveCellsBoard();
     var minAndMaxRowAndColumnIndexes = deriveMinAndMaxRowAndColumnIndexesFromBoard();
-    var cellTDElements = document.querySelectorAll(".cell");
-    var liveCells = DeriveLiveCellsFrom(cellTDElements);
-    document.querySelector("#board").innerHTML = generateBoardFrom(liveCells, minAndMaxRowAndColumnIndexes.minRowIndex, minAndMaxRowAndColumnIndexes.minColumnIndex, minAndMaxRowAndColumnIndexes.maxRowIndex, minAndMaxRowAndColumnIndexes.maxColumnIndex + 1);
+    minAndMaxRowAndColumnIndexes.maxColumnIndex += 1;
+    document.querySelector("#board").innerHTML = generateBoardFrom(liveCells, minAndMaxRowAndColumnIndexes);
 }
 
 function handleResetClick() {
