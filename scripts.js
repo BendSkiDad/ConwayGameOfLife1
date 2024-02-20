@@ -10,45 +10,27 @@ function LiveCell(rowIndex, columnIndex) {
     this.columnIndex = columnIndex;
 }
 
-function findMinColumnIndexOf(cells) {
-
-    var minColumnIndex = cells[0].columnIndex;
-    for (var i = 1; i < cells.length; i++) {
-        if (cells[i].columnIndex < minColumnIndex) {
-            minColumnIndex = cells[i].columnIndex;
-        }
+function deriveOuterCoordinatesOf(rowIndexes, columnIndexes) {
+    var minRowIndex = Math.min(...rowIndexes);
+    var maxRowIndex = Math.max(...rowIndexes);
+    var minColumnIndex = Math.min(...columnIndexes);
+    var maxColumnIndex = Math.max(...columnIndexes);
+    return {
+        minRowIndex: minRowIndex,
+        maxRowIndex: maxRowIndex,
+        minColumnIndex: minColumnIndex,
+        maxColumnIndex: maxColumnIndex
     }
-    return minColumnIndex;
 }
 
-function findMinRowIndexOf(cells) {
-    var minRowIndex = cells[0].rowIndex;
-    for (var i = 1; i < cells.length; i++) {
-        if (cells[i].rowIndex < minRowIndex) {
-            minRowIndex = cells[i].rowIndex;
-        }
-    }
-    return minRowIndex;
-}
-
-function findMaxColumnIndexOf(cells) {
-    var maxColumnIndex = cells[0].columnIndex;
-    for (var i = 1; i < cells.length; i++) {
-        if (cells[i].columnIndex > maxColumnIndex) {
-            maxColumnIndex = cells[i].columnIndex;
-        }
-    }
-    return maxColumnIndex;
-}
-
-function findMaxRowIndexOf(cells) {
-    var maxRowIndex = cells[0].rowIndex;
-    for (var i = 1; i < cells.length; i++) {
-        if (cells[i].rowIndex > maxRowIndex) {
-            maxRowIndex = cells[i].rowIndex;
-        }
-    }
-    return maxRowIndex;
+function deriveOuterCoordinateOfCells(cells) {
+    var rowIndexes = cells.map(function (cell) {
+        return cell.rowIndex;
+    });
+    var columnIndexes = cells.map(function (cell) {
+        return cell.columnIndex;
+    });
+    return deriveOuterCoordinatesOf(rowIndexes, columnIndexes);
 }
 
 function isThereALiveCellAt(liveCells, rowIndex, columnIndex) {
@@ -89,10 +71,10 @@ function generateRowFrom(liveCells, rowIndex, leftColumnIndex, rightColumnIndex)
     return rowText + "</tr>";
 }
 
-function generateBoardFrom(liveCells, minAndMaxRowAndColumnIndexes) {
-    var board = "<table>" + generateBoardHeaderRowFrom(minAndMaxRowAndColumnIndexes.minColumnIndex, minAndMaxRowAndColumnIndexes.maxColumnIndex);
-    for (var rowIndex = minAndMaxRowAndColumnIndexes.minRowIndex; rowIndex <= minAndMaxRowAndColumnIndexes.maxRowIndex; rowIndex++) {
-        board += generateRowFrom(liveCells, rowIndex, minAndMaxRowAndColumnIndexes.minColumnIndex, minAndMaxRowAndColumnIndexes.maxColumnIndex);
+function generateBoardFrom(liveCells, boardCoordinates) {
+    var board = "<table>" + generateBoardHeaderRowFrom(boardCoordinates.minColumnIndex, boardCoordinates.maxColumnIndex);
+    for (var rowIndex = boardCoordinates.minRowIndex; rowIndex <= boardCoordinates.maxRowIndex; rowIndex++) {
+        board += generateRowFrom(liveCells, rowIndex, boardCoordinates.minColumnIndex, boardCoordinates.maxColumnIndex);
     }
     return board + "</table>";
 }
@@ -107,8 +89,9 @@ function getColumnIndexFrom(cellTDElement) {
     return columnIndex;
 }
 
-function DeriveLiveCellsBoard() {
+function DeriveLiveCellsFromBoard() {
     var cellTDElements = document.querySelectorAll(".cell");
+    //todo: consider doing this with a map function?
     var liveCells = new Array();
     for (var i = 0; i < cellTDElements.length; i++) {
         var cellTDElement = cellTDElements[i];
@@ -123,6 +106,7 @@ function DeriveLiveCellsBoard() {
 }
 
 function numberOfLiveNeighbors(rowIndex, columnIndex, liveCells) {
+    //todo: consider doing this with a filter function?
     var count = 0;
     for (var i = 0; i < liveCells.length; i++) {
         var liveCell = liveCells[i];
@@ -141,14 +125,15 @@ function numberOfLiveNeighbors(rowIndex, columnIndex, liveCells) {
 
 function DeriveNewLiveCellsFrom(liveCells) {
     //find indexes just outside the live cells
-    var upperLeftRowIndex = findMinRowIndexOf(liveCells) - 1;
-    var upperLeftColumnIndex = findMinColumnIndexOf(liveCells) - 1;
-    var lowerRightRowIndex = findMaxRowIndexOf(liveCells) + 1;
-    var lowerRightColumnIndex = findMaxColumnIndexOf(liveCells) + 1;
+    var outerCoordinatesOfCells = deriveOuterCoordinateOfCells(liveCells);
+    outerCoordinatesOfCells.minRowIndex -= 1;
+    outerCoordinatesOfCells.minColumnIndex -= 1;
+    outerCoordinatesOfCells.maxRowIndex += 1;
+    outerCoordinatesOfCells.maxColumnIndex += 1;
 
     var newLiveCells = new Array();
-    for (var rowIndex = upperLeftRowIndex; rowIndex <= lowerRightRowIndex; rowIndex++) {
-        for (var columnIndex = upperLeftColumnIndex; columnIndex <= lowerRightColumnIndex; columnIndex++) {
+    for (var rowIndex = outerCoordinatesOfCells.minRowIndex; rowIndex <= outerCoordinatesOfCells.maxRowIndex; rowIndex++) {
+        for (var columnIndex = outerCoordinatesOfCells.minColumnIndex; columnIndex <= outerCoordinatesOfCells.maxColumnIndex; columnIndex++) {
             var liveNeighborCount = numberOfLiveNeighbors(rowIndex, columnIndex, liveCells);
             if ((isThereALiveCellAt(liveCells, rowIndex, columnIndex) && (liveNeighborCount === 2 || liveNeighborCount === 3)) || liveNeighborCount === 3) {
                 newLiveCells.push(new LiveCell(rowIndex, columnIndex));
@@ -181,15 +166,30 @@ function Stop() {
 }
 
 function Reset() {
-    var liveCells = [];
-    var minAndMaxRowAndColumnIndexes = {
+    var liveCells = [
+        //up and left traveler
+        new LiveCell(2, 2),
+        new LiveCell(2, 3),
+        new LiveCell(2, 4),
+        new LiveCell(3, 2),
+        new LiveCell(4, 3),
+
+        //down and right traveler
+        new LiveCell(7, 78),
+        new LiveCell(8, 79),
+        new LiveCell(9, 77),
+        new LiveCell(9, 78),
+        new LiveCell(9, 79),
+
+    ];
+    var startingBoardCoordinates = {
         minRowIndex: 1,
         minColumnIndex: 1,
         maxRowIndex: 10,
         maxColumnIndex: 80
     };
 
-    document.querySelector("#board").innerHTML = generateBoardFrom(liveCells, minAndMaxRowAndColumnIndexes);
+    document.querySelector("#board").innerHTML = generateBoardFrom(liveCells, startingBoardCoordinates);
     var iterationCountDiv = document.getElementById("iterationCount");
     iterationCountDiv.textContent = 0;
     if (isRunning) {
@@ -203,28 +203,19 @@ function UpdateIterationCount() {
     iterationCountDiv.textContent = iterationCount + 1;
 }
 
-function deriveMinAndMaxRowAndColumnIndexesFromBoard() {
+function deriveBoardCoordinates() {
     var cellTDElements = document.querySelectorAll(".cell");
-    var arrRowIndexes = Array.from(cellTDElements).map(function (cellTDElement) {
+    var rowIndexes = Array.from(cellTDElements).map(function (cellTDElement) {
         return getRowIndexFrom(cellTDElement);
     })
-    var minRowIndex = Math.min(...arrRowIndexes);
-    var maxRowIndex = Math.max(...arrRowIndexes);
-    var arrColumnIndexes = Array.from(cellTDElements).map(function (cellTDElement) {
+    var columnIndexes = Array.from(cellTDElements).map(function (cellTDElement) {
         return getColumnIndexFrom(cellTDElement);
     })
-    var minColumnIndex = Math.min(...arrColumnIndexes);
-    var maxColumnIndex = Math.max(...arrColumnIndexes);
-    return {
-        minRowIndex: minRowIndex,
-        maxRowIndex: maxRowIndex,
-        minColumnIndex: minColumnIndex,
-        maxColumnIndex: maxColumnIndex
-    }
+    return deriveOuterCoordinatesOf(rowIndexes, columnIndexes);
 }
 
 function UpdateBoard() {
-    var liveCells = DeriveLiveCellsBoard();
+    var liveCells = DeriveLiveCellsFromBoard();
     if (liveCells.length === 0) {
         Reset();
         return;
@@ -235,13 +226,14 @@ function UpdateBoard() {
         return;
     }
 
-    var minAndMaxRowAndColumnIndexes = deriveMinAndMaxRowAndColumnIndexesFromBoard();
+    var boardCoordinates = deriveBoardCoordinates();
+    var outerNewLiveCellCoordinates = deriveOuterCoordinateOfCells(newLiveCells);
     //expand the board if necessary
-    minAndMaxRowAndColumnIndexes.minRowIndex = Math.min(minAndMaxRowAndColumnIndexes.minRowIndex, findMinRowIndexOf(newLiveCells));
-    minAndMaxRowAndColumnIndexes.minColumnIndex = Math.min(minAndMaxRowAndColumnIndexes.minColumnIndex, findMinColumnIndexOf(newLiveCells));
-    minAndMaxRowAndColumnIndexes.maxRowIndex = Math.max(minAndMaxRowAndColumnIndexes.maxRowIndex, findMaxRowIndexOf(newLiveCells));
-    minAndMaxRowAndColumnIndexes.maxColumnIndex = Math.max(minAndMaxRowAndColumnIndexes.maxColumnIndex, findMaxColumnIndexOf(newLiveCells));
-    document.querySelector("#board").innerHTML = generateBoardFrom(newLiveCells, minAndMaxRowAndColumnIndexes);
+    boardCoordinates.minRowIndex = Math.min(boardCoordinates.minRowIndex, outerNewLiveCellCoordinates.minRowIndex);
+    boardCoordinates.minColumnIndex = Math.min(boardCoordinates.minColumnIndex, outerNewLiveCellCoordinates.minColumnIndex);
+    boardCoordinates.maxRowIndex = Math.max(boardCoordinates.maxRowIndex, outerNewLiveCellCoordinates.maxRowIndex);
+    boardCoordinates.maxColumnIndex = Math.max(boardCoordinates.maxColumnIndex, outerNewLiveCellCoordinates.maxColumnIndex);
+    document.querySelector("#board").innerHTML = generateBoardFrom(newLiveCells, boardCoordinates);
 }
 
 function advanceAStep() {
@@ -254,17 +246,17 @@ function handleAdvanceAStepClick() {
 }
 
 function handleAddRowClick() {
-    var liveCells = DeriveLiveCellsBoard();
-    var minAndMaxRowAndColumnIndexes = deriveMinAndMaxRowAndColumnIndexesFromBoard();
-    minAndMaxRowAndColumnIndexes.maxRowIndex += 1;
-    document.querySelector("#board").innerHTML = generateBoardFrom(liveCells, minAndMaxRowAndColumnIndexes);
+    var liveCells = DeriveLiveCellsFromBoard();
+    var boardCoordinates = deriveBoardCoordinates();
+    boardCoordinates.maxRowIndex += 1;
+    document.querySelector("#board").innerHTML = generateBoardFrom(liveCells, boardCoordinates);
 }
 
 function handleAddColumnClick() {
-    var liveCells = DeriveLiveCellsBoard();
-    var minAndMaxRowAndColumnIndexes = deriveMinAndMaxRowAndColumnIndexesFromBoard();
-    minAndMaxRowAndColumnIndexes.maxColumnIndex += 1;
-    document.querySelector("#board").innerHTML = generateBoardFrom(liveCells, minAndMaxRowAndColumnIndexes);
+    var liveCells = DeriveLiveCellsFromBoard();
+    var boardCoordinates = deriveBoardCoordinates();
+    boardCoordinates.maxColumnIndex += 1;
+    document.querySelector("#board").innerHTML = generateBoardFrom(liveCells, boardCoordinates);
 }
 
 function handleResetClick() {
