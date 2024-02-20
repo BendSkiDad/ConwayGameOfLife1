@@ -63,18 +63,6 @@ function generateHeaderOutputRowFrom(leftColumnIndex, rightColumnIndex) {
   return headerOutputRow + "</tr>";
 }
 
-function handleCellClick(tdElement) {
-  if (tdElement.getAttribute("live") === "true") {
-    tdElement.setAttribute("live", "false");
-    tdElement.innerHTML = "";
-  }
-  else {
-      tdElement.setAttribute("live", "true");
-      tdElement.classList.add("liveCell");
-      //tdElement.innerHTML = "x";
-  }
-}
-
 function generateRowFrom(liveCells, rowIndex, leftColumnIndex, rightColumnIndex) {
   var rowText = "<tr>" + "<td class='noPadding'>" + "<strong>" + Math.abs(rowIndex % 10) + "</strong>" + "</td>";
   for (var columnIndex = leftColumnIndex; columnIndex <= rightColumnIndex; columnIndex++) {
@@ -86,7 +74,6 @@ function generateRowFrom(liveCells, rowIndex, leftColumnIndex, rightColumnIndex)
     if (isLiveCellAt(liveCells, rowIndex, columnIndex)) {
       TDElement.setAttribute("live", "true");
       TDElement.classList.add("liveCell");
-      //TDElement.innerHTML = "x";
     }
     else {
       TDElement.setAttribute("live", "false");
@@ -141,25 +128,48 @@ function numberOfLiveNeighbors(rowIndex, columnIndex, liveCells) {
 }
 
 function DeriveNewLiveCellsFrom(liveCells) {
-  var upperLeftRowIndex = findMinRowIndexOf(liveCells) - 1;
-  var upperLeftColumnIndex = findMinColumnIndexOf(liveCells) - 1;
-  var lowerRightRowIndex = findMaxRowIndexOf(liveCells) + 1;
-  var lowerRightColumnIndex = findMaxColumnIndexOf(liveCells) + 1;
+    //find indexes just outside the live cells
+    var upperLeftRowIndex = findMinRowIndexOf(liveCells) - 1;
+    var upperLeftColumnIndex = findMinColumnIndexOf(liveCells) - 1;
+    var lowerRightRowIndex = findMaxRowIndexOf(liveCells) + 1;
+    var lowerRightColumnIndex = findMaxColumnIndexOf(liveCells) + 1;
 
-  var newLiveCells = new Array();
-  for (var rowIndex = upperLeftRowIndex; rowIndex <= lowerRightRowIndex; rowIndex++) {
-    for (var columnIndex = upperLeftColumnIndex; columnIndex <= lowerRightColumnIndex; columnIndex++) {
-      var liveNeighborCount = numberOfLiveNeighbors(rowIndex, columnIndex, liveCells);
-      if ((isLiveCellAt(liveCells, rowIndex, columnIndex) && (liveNeighborCount === 2 || liveNeighborCount === 3)) || liveNeighborCount === 3) {
-        newLiveCells.push(new Cell(rowIndex, columnIndex, "true"));
-      }
+    var newLiveCells = new Array();
+    for (var rowIndex = upperLeftRowIndex; rowIndex <= lowerRightRowIndex; rowIndex++) {
+        for (var columnIndex = upperLeftColumnIndex; columnIndex <= lowerRightColumnIndex; columnIndex++) {
+            var liveNeighborCount = numberOfLiveNeighbors(rowIndex, columnIndex, liveCells);
+            if ((isLiveCellAt(liveCells, rowIndex, columnIndex) && (liveNeighborCount === 2 || liveNeighborCount === 3)) || liveNeighborCount === 3) {
+                newLiveCells.push(new Cell(rowIndex, columnIndex, "true"));
+            }
+        }
     }
-  }
-  return newLiveCells;
+    return newLiveCells;
 }
 
 function isLive(cell) {
   return cell.live === "true";
+}
+
+function handleCellClick(tdElement) {
+    if (tdElement.getAttribute("live") === "true") {
+        tdElement.setAttribute("live", "false");
+        tdElement.classList.remove("liveCell");
+    }
+    else {
+        tdElement.setAttribute("live", "true");
+        tdElement.classList.add("liveCell");
+    }
+}
+
+var interval;
+var isRunning = false;
+
+function Stop() {
+    clearInterval(interval);
+    isRunning = false;
+    var runButton = document.getElementById("btnRun");
+    runButton.value = "Run";
+    runButton.setAttribute("onclick", "handleRunClick()");
 }
 
 function Reset() {
@@ -202,52 +212,53 @@ function UpdateBoard() {
   document.querySelector("#board").innerHTML = generateBoardFrom(newLiveCells, upperLeftRowIndex, upperLeftColumnIndex, lowerRightRowIndex, lowerRightColumnIndex);
 }
 
-function AdvanceAStep() {
+function advanceAStep() {
   UpdateIterationCount();
   UpdateBoard();
 }
 
-function AddRow() {
-  var cellTDElements = document.querySelectorAll(".cell");
-  var cells = DeriveCellsArrayFrom(cellTDElements);
-
-  var upperLeftRowIndex = findMinRowIndexOf(cells);
-  var upperLeftColumnIndex = findMinColumnIndexOf(cells);
-  var lowerRightRowIndex = findMaxRowIndexOf(cells);
-  var lowerRightColumnIndex = findMaxColumnIndexOf(cells);
-
-  document.querySelector("#board").innerHTML = generateBoardFrom(cells, upperLeftRowIndex, upperLeftColumnIndex, lowerRightRowIndex + 1, lowerRightColumnIndex);
+function handleAdvanceAStepClick() {
+    advanceAStep();
 }
 
-function AddColumn() {
-  var cellTDElements = document.querySelectorAll(".cell");
-  var cells = DeriveCellsArrayFrom(cellTDElements);
+function handleAddRowClick() {
+    var cellTDElements = document.querySelectorAll(".cell");
+    var cells = DeriveCellsArrayFrom(cellTDElements);
 
-  var upperLeftRowIndex = findMinRowIndexOf(cells);
-  var upperLeftColumnIndex = findMinColumnIndexOf(cells);
-  var lowerRightRowIndex = findMaxRowIndexOf(cells);
-  var lowerRightColumnIndex = findMaxColumnIndexOf(cells);
+    var upperLeftRowIndex = findMinRowIndexOf(cells);
+    var upperLeftColumnIndex = findMinColumnIndexOf(cells);
+    var lowerRightRowIndex = findMaxRowIndexOf(cells);
+    var lowerRightColumnIndex = findMaxColumnIndexOf(cells);
 
-  document.querySelector("#board").innerHTML = generateBoardFrom(cells, upperLeftRowIndex, upperLeftColumnIndex, lowerRightRowIndex, lowerRightColumnIndex + 1);
+    document.querySelector("#board").innerHTML = generateBoardFrom(cells, upperLeftRowIndex, upperLeftColumnIndex, lowerRightRowIndex + 1, lowerRightColumnIndex);
 }
 
-var interval;
-var isRunning = false;
+function handleAddColumnClick() {
+    var cellTDElements = document.querySelectorAll(".cell");
+    var cells = DeriveCellsArrayFrom(cellTDElements);
 
-function Run() {
-  interval = setInterval(AdvanceAStep, 1000);
-  isRunning = true;
-  var runButton = document.getElementById("btnRun");
-  runButton.value = "Stop";
-  runButton.setAttribute("onclick", "Stop()");
+    var upperLeftRowIndex = findMinRowIndexOf(cells);
+    var upperLeftColumnIndex = findMinColumnIndexOf(cells);
+    var lowerRightRowIndex = findMaxRowIndexOf(cells);
+    var lowerRightColumnIndex = findMaxColumnIndexOf(cells);
+
+    document.querySelector("#board").innerHTML = generateBoardFrom(cells, upperLeftRowIndex, upperLeftColumnIndex, lowerRightRowIndex, lowerRightColumnIndex + 1);
 }
 
-function Stop() {
-  clearInterval(interval);
-  isRunning = false;
-  var runButton = document.getElementById("btnRun");
-  runButton.value = "Run";
-  runButton.setAttribute("onclick", "Run()");
+function handleResetClick() {
+    Reset();
+}
+
+function handleRunClick() {
+    interval = setInterval(advanceAStep, 1000);
+    isRunning = true;
+    var runButton = document.getElementById("btnRun");
+    runButton.value = "Stop";
+    runButton.setAttribute("onclick", "handleStopClick()");
+}
+
+function handleStopClick() {
+    Stop();
 }
 
 Reset();
