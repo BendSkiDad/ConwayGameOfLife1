@@ -233,13 +233,22 @@ var GameOfLifeHtmlGeneration = function () {
         document.querySelector("#board").innerHTML = GameOfLifeHtmlGeneration.generateBoardFrom(liveCells, startingBoardCoordinates);
     }
 
+    function start() {
+        interval = setInterval(GameOfLifeHtmlGeneration.advanceAStep, 1000);
+        isRunning = true;
+    }
+
+    var interval;
+    var isRunning = false;
+
     return {
         generateBoardFrom: generateBoardFrom,
         deriveLiveCellsFromBoard: deriveLiveCellsFromBoard,
         deriveBoardOuterCoordinates: deriveBoardOuterCoordinates,
         advanceAStep: advanceAStep,
         stop: stop,
-        reset: reset
+        reset: reset,
+        start: start
     };
 }();
 
@@ -278,11 +287,10 @@ var GameOfLifeEventHandlerModule = function () {
     }
 
     function handleRunClick() {
-        interval = setInterval(GameOfLifeHtmlGeneration.advanceAStep, 1000);
-        isRunning = true;
         var runButton = document.getElementById("btnRun");
         runButton.value = "Stop";
         runButton.setAttribute("onclick", "GameOfLifeEventHandlerModule.handleStopClick()");
+        GameOfLifeHtmlGeneration.start();
     }
 
     function handleStopClick() {
@@ -300,6 +308,4 @@ var GameOfLifeEventHandlerModule = function () {
     };
 }();
 
-var interval;
-var isRunning = false;
 GameOfLifeHtmlGeneration.reset();
