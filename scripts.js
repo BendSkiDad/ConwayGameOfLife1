@@ -27,24 +27,47 @@ var GameOfLifeLogic = function () {
         this.columnIndex = columnIndex;
     }
 
-    function deriveOuterCoordinatesOfCells(cells) {
-        var rowIndexes = cells.map(function (cell) {
+    var liveCells = [];
+    var iterationCount = 0;
+
+    function addSimpleGliderGoingUpAndLeft(rowIndex, columnIndex) {
+        liveCells.push(
+            new LiveCell(rowIndex, columnIndex),
+            new LiveCell(rowIndex, columnIndex + 1),
+            new LiveCell(rowIndex, columnIndex + 2),
+            new LiveCell(rowIndex + 1, columnIndex),
+            new LiveCell(rowIndex + 2, columnIndex + 1)
+        );
+    }
+
+    function addSimpleGliderGoingDownAndRight(rowIndex, columnIndex) {
+        liveCells.push(
+            new LiveCell(rowIndex, columnIndex + 1),
+            new LiveCell(rowIndex + 1, columnIndex + 2),
+            new LiveCell(rowIndex + 2, columnIndex),
+            new LiveCell(rowIndex + 2, columnIndex + 1),
+            new LiveCell(rowIndex + 2, columnIndex + 2)
+        );
+    }
+
+    function outerCoordinatesOfLiveCells() {
+        var rowIndexes = liveCells.map(function (cell) {
             return cell.rowIndex;
         });
-        var columnIndexes = cells.map(function (cell) {
+        var columnIndexes = liveCells.map(function (cell) {
             return cell.columnIndex;
         });
         return GridUtilities.deriveMinAndMaxRowAndColumnIndexesFrom(rowIndexes, columnIndexes);
     }
 
-    function isThereALiveCellAt(liveCells, rowIndex, columnIndex) {
+    function isThereALiveCellAt(rowIndex, columnIndex) {
         var matchingLiveCells = liveCells.filter(function (liveCell) {
             return liveCell.rowIndex === rowIndex && liveCell.columnIndex === columnIndex
         });
         return matchingLiveCells.length;
     }
 
-    function deriveNumberOfLiveNeighbors(rowIndex, columnIndex, liveCells) {
+    function deriveNumberOfLiveNeighbors(rowIndex, columnIndex) {
         var liveNeighborCells = liveCells.filter(function (liveCell) {
             return liveCell.rowIndex >= rowIndex - 1
                 && liveCell.rowIndex <= rowIndex + 1
@@ -55,9 +78,9 @@ var GameOfLifeLogic = function () {
         return liveNeighborCells.length;
     }
 
-    function deriveNewLiveCellsFrom(liveCells) {
+    function deriveNewLiveCells() {
         //find indexes just outside the live cells
-        var outerCoordinatesOfCells = deriveOuterCoordinatesOfCells(liveCells);
+        var outerCoordinatesOfCells = outerCoordinatesOfLiveCells();
         outerCoordinatesOfCells.minRowIndex -= 1;
         outerCoordinatesOfCells.minColumnIndex -= 1;
         outerCoordinatesOfCells.maxRowIndex += 1;
@@ -66,8 +89,8 @@ var GameOfLifeLogic = function () {
         var newLiveCells = new Array();
         for (var rowIndex = outerCoordinatesOfCells.minRowIndex; rowIndex <= outerCoordinatesOfCells.maxRowIndex; rowIndex++) {
             for (var columnIndex = outerCoordinatesOfCells.minColumnIndex; columnIndex <= outerCoordinatesOfCells.maxColumnIndex; columnIndex++) {
-                var liveNeighborCount = deriveNumberOfLiveNeighbors(rowIndex, columnIndex, liveCells);
-                if ((isThereALiveCellAt(liveCells, rowIndex, columnIndex) && (liveNeighborCount === 2 || liveNeighborCount === 3)) || liveNeighborCount === 3) {
+                var liveNeighborCount = deriveNumberOfLiveNeighbors(rowIndex, columnIndex);
+                if ((isThereALiveCellAt(rowIndex, columnIndex) && (liveNeighborCount === 2 || liveNeighborCount === 3)) || liveNeighborCount === 3) {
                     newLiveCells.push(new LiveCell(rowIndex, columnIndex));
                 }
             }
@@ -75,11 +98,45 @@ var GameOfLifeLogic = function () {
         return newLiveCells;
     }
 
+    function advanceOneStep() {
+        liveCells = deriveNewLiveCells();
+        iterationCount++;
+    }
+
+    function toggleLiveCell(rowIndex, columnIndex) {
+        var index = liveCells.indexOf(function (liveCell) {
+            return liveCell.rowIndex === rowIndex && liveCell.columnIndex === columnIndex;
+        });
+        if (index = -1) {
+            liveCells.push(new LiveCell(rowIndex, columnIndex));
+        } else {
+            liveCells.splice(index, 1);
+        }
+    }
+
+    function isAnyLiveCells() {
+        return liveCells.length;
+    }
+
+    function clear() {
+        liveCells = [];
+        iterationCount = 0;
+    }
+
+    function getIterationCount() {
+        return iterationCount;
+    }
+
     return {
-        LiveCell: LiveCell,
-        deriveOuterCoordinatesOfCells: deriveOuterCoordinatesOfCells,
+        addSimpleGliderGoingUpAndLeft: addSimpleGliderGoingUpAndLeft,
+        addSimpleGliderGoingDownAndRight: addSimpleGliderGoingDownAndRight,
+        outerCoordinatesOfCells: outerCoordinatesOfLiveCells,
         isThereALiveCellAt: isThereALiveCellAt,
-        deriveNewLiveCellsFrom: deriveNewLiveCellsFrom
+        advanceOneStep: advanceOneStep,
+        toggleLiveCell: toggleLiveCell,
+        isAnyLiveCells: isAnyLiveCells,
+        clear: clear,
+        getIterationCount: getIterationCount
     }
 }();
 
@@ -103,8 +160,7 @@ var GameOfLifeHtmlGeneration_HtmlTable = function () {
 
     function updateIterationCount() {
         var iterationCountDiv = document.getElementById(iterationCountElementId);
-        var iterationCount = Number(iterationCountDiv.textContent);
-        iterationCountDiv.textContent = iterationCount + 1;
+        iterationCountDiv.textContent = GameOfLifeLogic.getIterationCount();
     }
 
     function generateBoardHeaderTRElementFrom(leftColumnIndex, rightColumnIndex) {
@@ -123,7 +179,7 @@ var GameOfLifeHtmlGeneration_HtmlTable = function () {
         return rc;
     }
 
-    function generateRowElementFrom(liveCells, rowIndex, leftColumnIndex, rightColumnIndex) {
+    function generateRowElementFrom(rowIndex, leftColumnIndex, rightColumnIndex) {
         var tdElement = document.createElement("td");
         tdElement.classList.add("noPadding");
         var textNode = document.createTextNode(Math.abs(rowIndex % 10));
@@ -136,7 +192,7 @@ var GameOfLifeHtmlGeneration_HtmlTable = function () {
             tdElement.setAttribute(columnIndexAttributeName, columnIndex);
             tdElement.classList.add(gameOfLifeCellCSSClassToken);
             tdElement.setAttribute("onclick", "GameOfLifeEventHandlerModule.handleCellClick(this)");
-            if (GameOfLifeLogic.isThereALiveCellAt(liveCells, rowIndex, columnIndex)) {
+            if (GameOfLifeLogic.isThereALiveCellAt(rowIndex, columnIndex)) {
                 tdElement.setAttribute(liveAttributeName, "");
                 tdElement.classList.add(liveCellCSSClassToken);
             }
@@ -149,33 +205,17 @@ var GameOfLifeHtmlGeneration_HtmlTable = function () {
         return rc;
     }
 
-    function generateBoardAsTableHtmlElementFrom(liveCells, boardCoordinates) {
+    function generateBoardAsTableHtmlElementFrom(boardCoordinates) {
         var tableElement = document.createElement("table");
         tableElement.appendChild(generateBoardHeaderTRElementFrom(boardCoordinates.minColumnIndex, boardCoordinates.maxColumnIndex));
         for (var rowIndex = boardCoordinates.minRowIndex; rowIndex <= boardCoordinates.maxRowIndex; rowIndex++) {
-            tableElement.appendChild(generateRowElementFrom(liveCells, rowIndex, boardCoordinates.minColumnIndex, boardCoordinates.maxColumnIndex));
+            tableElement.appendChild(generateRowElementFrom(rowIndex, boardCoordinates.minColumnIndex, boardCoordinates.maxColumnIndex));
         }
         return tableElement;
     }
 
     function renderBoard(boardAsHtmlTableElement) {
         document.querySelector("#board").replaceChildren(boardAsHtmlTableElement);
-    }
-
-    function deriveLiveCellsFromBoard() {
-        var cellTDElements = document.querySelectorAll("." + gameOfLifeCellCSSClassToken);
-        //todo: consider doing this with a map function?
-        var liveCells = new Array();
-        for (var i = 0; i < cellTDElements.length; i++) {
-            var cellTDElement = cellTDElements[i];
-            var isLive = cellTDElement.hasAttribute(liveAttributeName);
-            if (isLive) {
-                var rowIndex = getRowIndexFrom(cellTDElement);
-                var columnIndex = getColumnIndexFrom(cellTDElement);
-                liveCells.push(new GameOfLifeLogic.LiveCell(rowIndex, columnIndex));
-            }
-        }
-        return liveCells;
     }
 
     function deriveBoardOuterCoordinates() {
@@ -190,31 +230,25 @@ var GameOfLifeHtmlGeneration_HtmlTable = function () {
     }
 
     function advanceBoardAStep() {
-        var liveCells = deriveLiveCellsFromBoard();
-        if (liveCells.length === 0) {
+        GameOfLifeLogic.advanceOneStep();
+        if (!GameOfLifeLogic.isAnyLiveCells()) {
             reset();
             return;
         }
-        var newLiveCells = GameOfLifeLogic.deriveNewLiveCellsFrom(liveCells);
-        if (newLiveCells.length === 0) {
-            reset();
-            return;
-        }
-
         var boardOuterCoordinates = deriveBoardOuterCoordinates();
-        var outerNewLiveCellCoordinates = GameOfLifeLogic.deriveOuterCoordinatesOfCells(newLiveCells);
+        var outerNewLiveCellCoordinates = GameOfLifeLogic.outerCoordinatesOfCells();
+
         //expand board outer coordinates if necessary
         boardOuterCoordinates.minRowIndex = Math.min(boardOuterCoordinates.minRowIndex, outerNewLiveCellCoordinates.minRowIndex);
         boardOuterCoordinates.minColumnIndex = Math.min(boardOuterCoordinates.minColumnIndex, outerNewLiveCellCoordinates.minColumnIndex);
         boardOuterCoordinates.maxRowIndex = Math.max(boardOuterCoordinates.maxRowIndex, outerNewLiveCellCoordinates.maxRowIndex);
         boardOuterCoordinates.maxColumnIndex = Math.max(boardOuterCoordinates.maxColumnIndex, outerNewLiveCellCoordinates.maxColumnIndex);
-        var boardAsHtmlTableElement = generateBoardAsTableHtmlElementFrom(newLiveCells, boardOuterCoordinates);
+        var boardAsHtmlTableElement = generateBoardAsTableHtmlElementFrom(boardOuterCoordinates);
         renderBoard(boardAsHtmlTableElement);
     }
 
     function reRenderBoardWithNew(boardOuterCoordinates) {
-        var liveCells = deriveLiveCellsFromBoard();
-        var boardAsHtmlTableElement = generateBoardAsTableHtmlElementFrom(liveCells, boardOuterCoordinates);
+        var boardAsHtmlTableElement = generateBoardAsTableHtmlElementFrom(boardOuterCoordinates);
         renderBoard(boardAsHtmlTableElement);
     }
 
@@ -264,29 +298,16 @@ var GameOfLifeHtmlGeneration_HtmlTable = function () {
         }
         var iterationCountDiv = document.getElementById(iterationCountElementId);
         iterationCountDiv.textContent = 0;
-        var liveCells = [
-            //up and left traveler
-            new GameOfLifeLogic.LiveCell(2, 2),
-            new GameOfLifeLogic.LiveCell(2, 3),
-            new GameOfLifeLogic.LiveCell(2, 4),
-            new GameOfLifeLogic.LiveCell(3, 2),
-            new GameOfLifeLogic.LiveCell(4, 3),
-
-            //down and right traveler
-            new GameOfLifeLogic.LiveCell(7, 78),
-            new GameOfLifeLogic.LiveCell(8, 79),
-            new GameOfLifeLogic.LiveCell(9, 77),
-            new GameOfLifeLogic.LiveCell(9, 78),
-            new GameOfLifeLogic.LiveCell(9, 79),
-
-        ];
+        GameOfLifeLogic.clear();
+        GameOfLifeLogic.addSimpleGliderGoingUpAndLeft(2, 2);
+        GameOfLifeLogic.addSimpleGliderGoingDownAndRight(7, 77);
         var startingBoardCoordinates = {
             minRowIndex: 1,
             minColumnIndex: 1,
             maxRowIndex: 10,
             maxColumnIndex: 80
         };
-        var boardAsHtmlTableElement = generateBoardAsTableHtmlElementFrom(liveCells, startingBoardCoordinates);
+        var boardAsHtmlTableElement = generateBoardAsTableHtmlElementFrom(startingBoardCoordinates);
         renderBoard(boardAsHtmlTableElement);
     }
 
@@ -312,9 +333,11 @@ var GameOfLifeHtmlGeneration_HtmlTable = function () {
 var GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule) {
     function handleCellClick(tdElement) {
         var elementCoordinates = gameOfLifeHtmlGenerationModule.toggleLiveness(tdElement);
+        GameOfLifeLogic.toggleLiveCell(elementCoordinates.rowIndex, elementCoordinates.columnIndex);
     }
 
     function handleAdvanceAStepClick() {
+        GameOfLifeLogic.advanceOneStep();
         gameOfLifeHtmlGenerationModule.advanceAStep();
     }
 
