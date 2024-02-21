@@ -1,7 +1,5 @@
 "use strict";
 
-//todo: store the live cells in the GameOfLifeLogic module and access them there instead of generating the live cells from the Html. This will require adding or removing a cell upon click of the TD element
-
 var GridUtilities = function () {
     function deriveMinAndMaxRowAndColumnIndexesFrom(rowIndexes, columnIndexes) {
         var minRowIndex = Math.min(...rowIndexes);
@@ -78,7 +76,7 @@ var GameOfLifeLogic = function () {
         return liveNeighborCells.length;
     }
 
-    function deriveNewLiveCells() {
+    function deriveNextSetOfLiveCellsFromCurrentLiveCells() {
         //find indexes just outside the live cells
         var outerCoordinatesOfCells = outerCoordinatesOfLiveCells();
         outerCoordinatesOfCells.minRowIndex -= 1;
@@ -99,7 +97,7 @@ var GameOfLifeLogic = function () {
     }
 
     function advanceOneStep() {
-        liveCells = deriveNewLiveCells();
+        liveCells = deriveNextSetOfLiveCellsFromCurrentLiveCells();
         iterationCount++;
     }
 
@@ -114,7 +112,7 @@ var GameOfLifeLogic = function () {
         }
     }
 
-    function clear() {
+    function clearLiveCells() {
         liveCells = [];
         iterationCount = 0;
     }
@@ -130,7 +128,7 @@ var GameOfLifeLogic = function () {
         isThereALiveCellAt: isThereALiveCellAt,
         advanceOneStep: advanceOneStep,
         toggleLiveCell: toggleLiveCell,
-        clear: clear,
+        clearLiveCells: clearLiveCells,
         getIterationCount: getIterationCount
     }
 }();
@@ -227,7 +225,7 @@ var GameOfLifeHtmlGeneration_HtmlTable = function () {
         document.querySelector("#board").replaceChildren(boardAsHtmlTableElement);
     }
 
-    function toggleLiveness(tdElement) {
+    function toggleLivenessOf(tdElement) {
         if (tdElement.hasAttribute(liveAttributeName)) {
             tdElement.removeAttribute(liveAttributeName);
             tdElement.classList.remove(liveCellCSSClassToken);
@@ -266,7 +264,7 @@ var GameOfLifeHtmlGeneration_HtmlTable = function () {
         runButton.setAttribute("onclick", "GameOfLifeEventHandlerModule.handleStopClick()");
     }
 
-    function updateIterationCount() {
+    function renderIterationCount() {
         var iterationCountDiv = document.getElementById(iterationCountElementId);
         iterationCountDiv.textContent = GameOfLifeLogic.getIterationCount();
     }
@@ -281,12 +279,12 @@ var GameOfLifeHtmlGeneration_HtmlTable = function () {
     }
 
     return {
-        toggleLiveness: toggleLiveness,
+        toggleLivenessOf: toggleLivenessOf,
         addRow: addRow,
         addColumn: addColumn,
         renderRunStartButtonAsRun: renderRunStopButtonAsRun,
         renderRunStopButtonAsStop: renderRunStopButtonAsStop,
-        updateIterationCount: updateIterationCount,
+        renderIterationCount: renderIterationCount,
         renderBoardUsingMinimumOuterCoordinatesAndLiveCells: renderBoardUsingMinimumOuterCoordinatesAndLiveCells,
         renderBoardUsingExistingBoardAndLiveCells: renderBoardUsingExistingBoardAndLiveCells
     };
@@ -299,7 +297,7 @@ var GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule) {
     function advanceOneStep() {
         GameOfLifeLogic.advanceOneStep();
         GameOfLifeHtmlGeneration_HtmlTable.renderBoardUsingExistingBoardAndLiveCells();
-        GameOfLifeHtmlGeneration_HtmlTable.updateIterationCount();
+        GameOfLifeHtmlGeneration_HtmlTable.renderIterationCount();
     }
 
     function start() {
@@ -318,7 +316,8 @@ var GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule) {
         if (isRunning) {
             stop();
         }
-        GameOfLifeLogic.clear();
+        GameOfLifeLogic.clearLiveCells();
+
         GameOfLifeLogic.addSimpleGliderGoingUpAndLeft(2, 2);
         GameOfLifeLogic.addSimpleGliderGoingDownAndRight(7, 77);
         var startingBoardCoordinates = {
@@ -328,11 +327,11 @@ var GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule) {
             maxColumnIndex: 80
         };
         GameOfLifeHtmlGeneration_HtmlTable.renderBoardUsingMinimumOuterCoordinatesAndLiveCells(startingBoardCoordinates);
-        GameOfLifeHtmlGeneration_HtmlTable.updateIterationCount();
+        GameOfLifeHtmlGeneration_HtmlTable.renderIterationCount();
     }
 
     function handleCellClick(tdElement) {
-        var elementCoordinates = gameOfLifeHtmlGenerationModule.toggleLiveness(tdElement);
+        var elementCoordinates = gameOfLifeHtmlGenerationModule.toggleLivenessOf(tdElement);
         GameOfLifeLogic.toggleLiveCell(elementCoordinates.rowIndex, elementCoordinates.columnIndex);
     }
 
