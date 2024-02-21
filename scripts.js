@@ -293,36 +293,36 @@ var GameOfLifeHtmlGeneration_HtmlTable = function () {
     };
 }();
 
-var GameOfLifeEventHandlerModule = function () {
+var GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule) {
     function handleCellClick(tdElement) {
-        GameOfLifeHtmlGeneration_HtmlTable.toggleLiveness(tdElement);
+        gameOfLifeHtmlGenerationModule.toggleLiveness(tdElement);
     }
 
     function handleAdvanceAStepClick() {
-        GameOfLifeHtmlGeneration_HtmlTable.advanceAStep();
+        gameOfLifeHtmlGenerationModule.advanceAStep();
     }
 
     function handleAddRowClick() {
-        GameOfLifeHtmlGeneration_HtmlTable.addRow();
+        gameOfLifeHtmlGenerationModule.addRow();
     }
 
     function handleAddColumnClick() {
-        GameOfLifeHtmlGeneration_HtmlTable.addColumn();
+        gameOfLifeHtmlGenerationModule.addColumn();
     }
 
     function handleResetClick() {
-        GameOfLifeHtmlGeneration_HtmlTable.reset();
+        gameOfLifeHtmlGenerationModule.reset();
     }
 
     function handleRunClick() {
         var runButton = document.getElementById("btnRun");
         runButton.value = "Stop";
         runButton.setAttribute("onclick", "GameOfLifeEventHandlerModule.handleStopClick()");
-        GameOfLifeHtmlGeneration_HtmlTable.start();
+        gameOfLifeHtmlGenerationModule.start();
     }
 
     function handleStopClick() {
-        GameOfLifeHtmlGeneration_HtmlTable.stop();
+        gameOfLifeHtmlGenerationModule.stop();
     }
 
     return {
@@ -334,6 +334,6 @@ var GameOfLifeEventHandlerModule = function () {
         handleRunClick: handleRunClick,
         handleStopClick: handleStopClick
     };
-}();
+}(GameOfLifeHtmlGeneration_HtmlTable);  //inject the HtmlTable version of GOL HtmlGeneration module. Currently this is the only one but I'm thinking of writing another.
 
 GameOfLifeHtmlGeneration_HtmlTable.reset();
