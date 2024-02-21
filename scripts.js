@@ -205,6 +205,17 @@ var GameOfLifeHtmlGeneration_HtmlTable = function () {
         renderBoard(boardHtml);
     }
 
+    function toggleLiveness(tdElement) {
+        if (tdElement.hasAttribute("live")) {
+            tdElement.removeAttribute("live");
+            tdElement.classList.remove("liveCell");
+        }
+        else {
+            tdElement.setAttribute("live", "");
+            tdElement.classList.add("liveCell");
+        }
+    }
+
     function advanceAStep() {
         updateIterationCount();
         advanceBoardAStep();
@@ -272,25 +283,19 @@ var GameOfLifeHtmlGeneration_HtmlTable = function () {
     var isRunning = false;
 
     return {
+        toggleLiveness: toggleLiveness,
         advanceAStep: advanceAStep,
         addRow: addRow,
         addColumn: addColumn,
-        reset: reset,
         stop: stop,
+        reset: reset,
         start: start
     };
 }();
 
 var GameOfLifeEventHandlerModule = function () {
     function handleCellClick(tdElement) {
-        if (tdElement.hasAttribute("live")) {
-            tdElement.removeAttribute("live");
-            tdElement.classList.remove("liveCell");
-        }
-        else {
-            tdElement.setAttribute("live", "");
-            tdElement.classList.add("liveCell");
-        }
+        GameOfLifeHtmlGeneration_HtmlTable.toggleLiveness(tdElement);
     }
 
     function handleAdvanceAStepClick() {
