@@ -102,10 +102,10 @@ var GameOfLifeLogic = function () {
     }
 
     function toggleLiveCell(rowIndex, columnIndex) {
-        var index = liveCells.indexOf(function (liveCell) {
+        var index = liveCells.findIndex(function (liveCell) {
             return liveCell.rowIndex === rowIndex && liveCell.columnIndex === columnIndex;
         });
-        if (index = -1) {
+        if (index === -1) {
             liveCells.push(new LiveCell(rowIndex, columnIndex));
         } else {
             liveCells.splice(index, 1);
@@ -296,12 +296,12 @@ var GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule) {
 
     function advanceOneStep() {
         GameOfLifeLogic.advanceOneStep();
-        GameOfLifeHtmlGeneration_HtmlTable.renderBoardUsingExistingBoardAndLiveCells();
-        GameOfLifeHtmlGeneration_HtmlTable.renderIterationCount();
+        gameOfLifeHtmlGenerationModule.renderBoardUsingExistingBoardAndLiveCells();
+        gameOfLifeHtmlGenerationModule.renderIterationCount();
     }
 
     function start() {
-        GameOfLifeHtmlGeneration_HtmlTable.renderRunStopButtonAsStop();
+        gameOfLifeHtmlGenerationModule.renderRunStopButtonAsStop();
         interval = setInterval(advanceOneStep, 1000);
         isRunning = true;
     }
@@ -326,8 +326,8 @@ var GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule) {
             maxRowIndex: 10,
             maxColumnIndex: 80
         };
-        GameOfLifeHtmlGeneration_HtmlTable.renderBoardUsingMinimumOuterCoordinatesAndLiveCells(startingBoardCoordinates);
-        GameOfLifeHtmlGeneration_HtmlTable.renderIterationCount();
+        gameOfLifeHtmlGenerationModule.renderBoardUsingMinimumOuterCoordinatesAndLiveCells(startingBoardCoordinates);
+        gameOfLifeHtmlGenerationModule.renderIterationCount();
     }
 
     function handleCellClick(tdElement) {
