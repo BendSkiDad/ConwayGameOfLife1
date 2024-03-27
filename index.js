@@ -2,5 +2,6 @@
 
 const eventHandler =
     GameOfLifeEventHandlerModule(GameOfLifeHtmlGeneration_HtmlTable, GameOfLifeLogic);
-eventHandler.reset();
+const rootElement = document.getElementById("root");
+eventHandler.initializePage(rootElement);
 

@@ -81,7 +81,7 @@ const GameOfLifeHtmlGeneration_HtmlTable = function () {
         return GridUtilities.deriveMinAndMaxRowAndColumnIndexesFrom(rowIndexes, columnIndexes);
     }
 
-    function renderBoard(boardOuterCoordinates, fnHandleCellClick) {
+    function deriveBoardElement(boardOuterCoordinates, fnHandleCellClick) {
         const outerLiveCellCoordinates = GameOfLifeLogic.outerCoordinatesOfLiveCells();
 
         //expand board outer coordinates if necessary
@@ -90,7 +90,7 @@ const GameOfLifeHtmlGeneration_HtmlTable = function () {
         boardOuterCoordinates.maxRowIndex = Math.max(boardOuterCoordinates.maxRowIndex, outerLiveCellCoordinates.maxRowIndex);
         boardOuterCoordinates.maxColumnIndex = Math.max(boardOuterCoordinates.maxColumnIndex, outerLiveCellCoordinates.maxColumnIndex);
         const boardAsHtmlTableElement = generateBoardAsTableHtmlElementFrom(boardOuterCoordinates, fnHandleCellClick);
-        document.querySelector("#board").replaceChildren(boardAsHtmlTableElement);
+        return boardAsHtmlTableElement;
     }
 
     function toggleLivenessOf(e) {
@@ -109,16 +109,18 @@ const GameOfLifeHtmlGeneration_HtmlTable = function () {
         };
     }
 
-    function addRow(fnCellClickHandler) {
+    function deriveBoardWithAdditionalRow(fnCellClickHandler) {
         const boardOuterCoordinates = deriveOuterCoordinatesOfExistingBoard();
         boardOuterCoordinates.maxRowIndex += 1;
-        renderBoard(boardOuterCoordinates, fnCellClickHandler);
+        const boardAsHtmlTableElement = deriveBoardElement(boardOuterCoordinates, fnCellClickHandler);
+        return boardAsHtmlTableElement;
     }
 
-    function addColumn(fnCellClickHandler) {
+    function deriveBoardWithAdditionalColumn(fnCellClickHandler) {
         const boardOuterCoordinates = deriveOuterCoordinatesOfExistingBoard();
         boardOuterCoordinates.maxColumnIndex += 1;
-        renderBoard(boardOuterCoordinates, fnCellClickHandler);
+        const boardAsHtmlTableElement = deriveBoardElement(boardOuterCoordinates, fnCellClickHandler);
+        return boardAsHtmlTableElement;
     }
 
     function renderRunStopButtonAsRun(fnHandleRunClick, fnHandleStopClick) {
@@ -137,28 +139,82 @@ const GameOfLifeHtmlGeneration_HtmlTable = function () {
         runButton.addEventListener("click", fnHandleStopClick);
     }
 
-    function renderIterationCount() {
+    function updateIterationCount() {
         const iterationCountDiv = document.getElementById(iterationCountElementId);
         iterationCountDiv.textContent = GameOfLifeLogic.getIterationCount();
     }
 
-    function renderBoardUsingMinimumOuterCoordinatesAndLiveCells(minimumOuterCoordinates, fnCellClickHandler) {
-        renderBoard(minimumOuterCoordinates, fnCellClickHandler);
+    function deriveBoardUsingMinimumOuterCoordinatesAndLiveCells(minimumOuterCoordinates, fnCellClickHandler) {
+        const boardAsHtmlTableElement = deriveBoardElement(minimumOuterCoordinates, fnCellClickHandler);
+        return boardAsHtmlTableElement;
     }
 
-    function renderBoardUsingExistingBoardAndLiveCells(fnCellClickHandler) {
+    function deriveBoardUsingExistingBoardAndLiveCells(fnCellClickHandler) {
         const boardOuterCoordinates = deriveOuterCoordinatesOfExistingBoard();
-        renderBoard(boardOuterCoordinates, fnCellClickHandler);
+        const boardAsHtmlTableElement = deriveBoardElement(boardOuterCoordinates, fnCellClickHandler);
+        return boardAsHtmlTableElement;
+    }
+
+    function deriveIterationCountParagraph() {
+        const labelTextNode = document.createTextNode("Iteration Count:");
+        const spanElement = document.createElement("span");
+        spanElement.setAttribute("id", iterationCountElementId);
+        const countTextNode = document.createTextNode("1");
+        spanElement.appendChild(countTextNode);
+        const pElement = document.createElement("p");
+        pElement.appendChild(labelTextNode);
+        pElement.appendChild(spanElement);
+        return pElement
+    }
+
+    function deriveButton(value, fnClickHandler) {
+        const button = document.createElement("input");
+        button.setAttribute("type", "button");
+        button.setAttribute("value", value);
+        button.addEventListener("click", fnClickHandler);
+        return button;
+    }
+
+    function deriveButtonContainerElement(fnAdvanceOneStepHandler, fnAddRowHandler, fnAddColumnHandler, fnResetHandler, fnRunHandler, fnStopHandler) {
+        const advanceOneStepButton = deriveButton("Advance a step", fnAdvanceOneStepHandler);
+        const addRowButton = deriveButton("Add Row", fnAddRowHandler);
+        const addColumnButton = deriveButton("Add Column", fnAddColumnHandler);
+        const resetButton = deriveButton("Reset", fnResetHandler);
+        const runButton = deriveButton("Run", fnRunHandler);
+        runButton.setAttribute("id", "btnRun");
+    
+        const buttonContainerElement = document.createElement("div");
+        buttonContainerElement.appendChild(advanceOneStepButton);
+        buttonContainerElement.appendChild(addRowButton);
+        buttonContainerElement.appendChild(addColumnButton);
+        buttonContainerElement.appendChild(resetButton);
+        buttonContainerElement.appendChild(runButton);
+        
+        return buttonContainerElement;
+    }
+
+    function renderGameAndControlsInRootElement(rootElement, boardOuterCoordinates, fnCellClickHandler, fnAdvanceOneStepHandler, fnAddRowHandler, fnAddColumnHandler, fnResetHandler, fnRunHandler, fnStopHandler) {
+        const iterationCountElement = deriveIterationCountParagraph();
+        const boardTableElement = deriveBoardElement(boardOuterCoordinates, fnCellClickHandler);
+        const boardPElement = document.createElement("p");
+        boardPElement.setAttribute("id", "board");
+        boardPElement.appendChild(boardTableElement);
+        const buttonContainerElement = deriveButtonContainerElement(fnAdvanceOneStepHandler, fnAddRowHandler, fnAddColumnHandler, fnResetHandler, fnRunHandler, fnStopHandler);
+
+        rootElement.appendChild(iterationCountElement);
+        rootElement.appendChild(boardPElement);
+        rootElement.appendChild(buttonContainerElement);
     }
 
     return {
         toggleLivenessOf: toggleLivenessOf,
-        addRow: addRow,
-        addColumn: addColumn,
+        deriveBoardWithAdditionalRow: deriveBoardWithAdditionalRow,
+        deriveBoardWithAdditionalColumn: deriveBoardWithAdditionalColumn,
         renderRunStopButtonAsRun: renderRunStopButtonAsRun,
         renderRunStopButtonAsStop: renderRunStopButtonAsStop,
-        renderIterationCount: renderIterationCount,
-        renderBoardUsingMinimumOuterCoordinatesAndLiveCells: renderBoardUsingMinimumOuterCoordinatesAndLiveCells,
-        renderBoardUsingExistingBoardAndLiveCells: renderBoardUsingExistingBoardAndLiveCells
+        updateIterationCount: updateIterationCount,
+        deriveBoardUsingMinimumOuterCoordinatesAndLiveCells: deriveBoardUsingMinimumOuterCoordinatesAndLiveCells,
+        deriveBoardUsingExistingBoardAndLiveCells: deriveBoardUsingExistingBoardAndLiveCells,
+        renderGameAndControlsInRootElement: renderGameAndControlsInRootElement
     };
 }();
