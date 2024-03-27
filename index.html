@@ -7,7 +7,12 @@
   <title>Conway's Game of Life - Gene Hyde</title>
   <link rel="stylesheet" href="styles.css" type="text/css" media="all">
 
-  <script type="text/javascript" src="scripts.js" defer></script>
+  <!-- <script type="text/javascript" src="scripts.js" defer></script> -->
+  <script type="text/javascript" src="gridUtilities.js" defer></script>
+  <script type="text/javascript" src="gameOfLifeLogic.js" defer></script>
+  <script type="text/javascript" src="gameOfLifeHtmlGeneration_HtmlTable" defer></script>
+  <script type="text/javascript" src="gameOfLifeEventHandlerModule" defer></script>
+  <script type="text/javascript" src="index.js" defer></script>
 
   <style>
     td.cell {
@@ -27,11 +32,11 @@
     <p id="board">
       Empty Board
     </p>
-    <input type="button" value="Advance a step" onclick="GameOfLifeEventHandlerModule.handleAdvanceAStepClick()"/>
-    <input type="button" value="Add Row" onclick="GameOfLifeEventHandlerModule.handleAddRowClick()"/>
-    <input type="button" value="Add Column" onclick="GameOfLifeEventHandlerModule.handleAddColumnClick()"/>
-    <input type="button" value="Reset" onclick="GameOfLifeEventHandlerModule.handleResetClick()"/>
-    <input id="btnRun" type="button" value="Run" onclick="GameOfLifeEventHandlerModule.handleRunClick()"/>
+    <input type="button" value="Advance a step" onclick="eventHandler.handleAdvanceAStepClick()"/>
+    <input type="button" value="Add Row" onclick="eventHandler.handleAddRowClick()"/>
+    <input type="button" value="Add Column" onclick="eventHandler.handleAddColumnClick()"/>
+    <input type="button" value="Reset" onclick="eventHandler.handleResetClick()"/>
+    <input id="btnRun" type="button" value="Run" onclick="eventHandler.handleRunClick()"/>
   </main>
 </body>
 

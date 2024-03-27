@@ -1,0 +1,82 @@
+"use strict";
+
+const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, gameOfLifeLogicModule) {
+    let interval;
+    let isRunning = false;
+
+    function advanceOneStep() {
+        gameOfLifeLogicModule.advanceOneStep();
+        gameOfLifeHtmlGenerationModule.renderBoardUsingExistingBoardAndLiveCells(handleCellClick);
+        gameOfLifeHtmlGenerationModule.renderIterationCount();
+    }
+
+    function start() {
+        gameOfLifeHtmlGenerationModule.renderRunStopButtonAsStop(handleRunClick, handleStopClick);
+        interval = setInterval(advanceOneStep, 1000);
+        isRunning = true;
+    }
+
+    function stop() {
+        clearInterval(interval);
+        isRunning = false;
+        gameOfLifeHtmlGenerationModule.renderRunStopButtonAsRun(handleRunClick, handleStopClick);
+    }
+
+    function reset() {
+        if (isRunning) {
+            stop();
+        }
+        gameOfLifeLogicModule.clearLiveCells();
+
+        gameOfLifeLogicModule.addSimpleGliderGoingUpAndLeft(2, 2);
+        gameOfLifeLogicModule.addSimpleGliderGoingDownAndRight(7, 77);
+        const startingBoardCoordinates = {
+            minRowIndex: 1,
+            minColumnIndex: 1,
+            maxRowIndex: 10,
+            maxColumnIndex: 80
+        };
+        gameOfLifeHtmlGenerationModule.renderBoardUsingMinimumOuterCoordinatesAndLiveCells(startingBoardCoordinates, handleCellClick);
+        gameOfLifeHtmlGenerationModule.renderIterationCount();
+    }
+
+    function handleCellClick(e) {
+        const elementCoordinates = gameOfLifeHtmlGenerationModule.toggleLivenessOf(e);
+        gameOfLifeLogicModule.toggleLiveCell(elementCoordinates.rowIndex, elementCoordinates.columnIndex);
+    }
+
+    function handleAdvanceAStepClick() {
+        advanceOneStep();
+    }
+
+    function handleAddRowClick() {
+        gameOfLifeHtmlGenerationModule.addRow(handleCellClick);
+    }
+
+    function handleAddColumnClick() {
+        gameOfLifeHtmlGenerationModule.addColumn(handleCellClick);
+    }
+
+    function handleResetClick() {
+        reset();
+    }
+
+    function handleRunClick(e) {
+        start();
+    }
+
+    function handleStopClick(e) {
+        stop();
+    }
+
+    return {
+        handleCellClick: handleCellClick,
+        handleAdvanceAStepClick: handleAdvanceAStepClick,
+        handleAddRowClick: handleAddRowClick,
+        handleAddColumnClick: handleAddColumnClick,
+        reset: reset,
+        handleResetClick: handleResetClick,
+        handleRunClick: handleRunClick,
+        handleStopClick: handleStopClick
+    };
+};
