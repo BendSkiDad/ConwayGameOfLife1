@@ -61,11 +61,16 @@ const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, g
     }
 
     function handleCellClick(e) {
-        const elementCoordinates =
-          gameOfLifeHtmlGenerationModule.toggleLivenessOf(e);
-        gameOfLifeLogicModule.toggleLiveCell(
-            elementCoordinates.rowIndex,
-            elementCoordinates.columnIndex);
+        const coordinates =
+          gameOfLifeHtmlGenerationModule.getCoordinatesFromClickEventTarget(e);
+        gameOfLifeLogicModule.toggleCellLiveness(
+            coordinates.rowIndex,
+            coordinates.columnIndex);
+        const boardAsHtmlTableElement =
+          gameOfLifeHtmlGenerationModule.deriveBoardUsingExistingBoardAndLiveCells(
+              handleCellClick);
+        document.querySelector("#board").replaceChildren(
+            boardAsHtmlTableElement);
     }
 
     function handleAdvanceAStepClick() {

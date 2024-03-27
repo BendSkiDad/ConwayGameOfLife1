@@ -131,20 +131,12 @@ const GameOfLifeHtmlGeneration_HtmlTable = function () {
         return boardAsHtmlTableElement;
     }
 
-    function toggleLivenessOf(e) {
-        const tdElement = e.target;
-        if (tdElement.hasAttribute(liveAttributeName)) {
-            tdElement.removeAttribute(liveAttributeName);
-            tdElement.classList.remove(liveCellCSSClassToken);
-        }
-        else {
-            tdElement.setAttribute(liveAttributeName, "");
-            tdElement.classList.add(liveCellCSSClassToken);
-        }
-        return {
-            rowIndex: getRowIndexFrom(tdElement),
-            columnIndex: getColumnIndexFrom(tdElement)
-        };
+    function getCoordinatesFromClickEventTarget(e) {
+      const tdElement = e.target;
+      return {
+        rowIndex: getRowIndexFrom(tdElement),
+        columnIndex: getColumnIndexFrom(tdElement)
+      };
     }
 
     function deriveBoardWithAdditionalRow(fnCellClickHandler) {
@@ -276,7 +268,6 @@ const GameOfLifeHtmlGeneration_HtmlTable = function () {
     }
 
     return {
-        toggleLivenessOf: toggleLivenessOf,
         deriveBoardWithAdditionalRow: deriveBoardWithAdditionalRow,
         deriveBoardWithAdditionalColumn: deriveBoardWithAdditionalColumn,
         renderRunStopButtonAsRun: renderRunStopButtonAsRun,
@@ -284,6 +275,7 @@ const GameOfLifeHtmlGeneration_HtmlTable = function () {
         updateIterationCount: updateIterationCount,
         deriveBoardUsingMinimumOuterCoordinatesAndLiveCells: deriveBoardUsingMinimumOuterCoordinatesAndLiveCells,
         deriveBoardUsingExistingBoardAndLiveCells: deriveBoardUsingExistingBoardAndLiveCells,
-        renderGameAndControlsInRootElement: renderGameAndControlsInRootElement
+        renderGameAndControlsInRootElement: renderGameAndControlsInRootElement,
+        getCoordinatesFromClickEventTarget: getCoordinatesFromClickEventTarget
     };
 }();

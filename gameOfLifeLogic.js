@@ -86,7 +86,7 @@ const GameOfLifeLogic = function () {
         iterationCount++;
     }
 
-    function toggleLiveCell(rowIndex, columnIndex) {
+    function toggleCellLiveness(rowIndex, columnIndex) {
         const index = liveCells.findIndex(function (liveCell) {
             return liveCell.rowIndex === rowIndex && liveCell.columnIndex === columnIndex;
         });
@@ -112,7 +112,7 @@ const GameOfLifeLogic = function () {
         outerCoordinatesOfLiveCells: outerCoordinatesOfLiveCells,
         isThereALiveCellAt: isThereALiveCellAt,
         advanceOneStep: advanceOneStep,
-        toggleLiveCell: toggleLiveCell,
+        toggleCellLiveness: toggleCellLiveness,
         clearLiveCells: clearLiveCells,
         getIterationCount: getIterationCount
     }
