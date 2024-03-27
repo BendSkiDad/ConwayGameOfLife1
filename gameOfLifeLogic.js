@@ -36,7 +36,10 @@ const GameOfLifeLogic = function () {
         const columnIndexes = liveCells.map(function (cell) {
             return cell.columnIndex;
         });
-        return GridUtilities.deriveMinAndMaxRowAndColumnIndexesFrom(rowIndexes, columnIndexes);
+        const minAndMaxRowAndColumnIndexes = 
+            GridUtilities.deriveMinAndMaxRowAndColumnIndexesFrom(
+                rowIndexes, columnIndexes);
+        return minAndMaxRowAndColumnIndexes;
     }
 
     function isThereALiveCellAt(rowIndex, columnIndex) {
@@ -68,7 +71,8 @@ const GameOfLifeLogic = function () {
         const newLiveCells = new Array();
         for (let rowIndex = outerCoordinatesOfCells.minRowIndex; rowIndex <= outerCoordinatesOfCells.maxRowIndex; rowIndex++) {
             for (let columnIndex = outerCoordinatesOfCells.minColumnIndex; columnIndex <= outerCoordinatesOfCells.maxColumnIndex; columnIndex++) {
-                const liveNeighborCount = deriveNumberOfLiveNeighbors(rowIndex, columnIndex);
+                const liveNeighborCount =
+                  deriveNumberOfLiveNeighbors(rowIndex, columnIndex);
                 if ((isThereALiveCellAt(rowIndex, columnIndex) && (liveNeighborCount === 2 || liveNeighborCount === 3)) || liveNeighborCount === 3) {
                     newLiveCells.push(new LiveCell(rowIndex, columnIndex));
                 }
@@ -95,7 +99,7 @@ const GameOfLifeLogic = function () {
 
     function clearLiveCells() {
         liveCells = [];
-        iterationCount = 0;
+        //iterationCount = 0;
     }
 
     function getIterationCount() {
