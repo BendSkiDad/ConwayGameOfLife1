@@ -190,6 +190,15 @@ const GameOfLifeHtmlGeneration_HtmlTable = function (gameOfLifeLogicModule) {
         return boardAsHtmlTableElement;
     }
 
+    function deriveRuleDescriptionElement() {
+      const rule = gameOfLifeLogicModule.getBornAndSuvivesRule();
+      const ruleText = "Rule: B" + rule.arrBornNeighborCount.join("") + "/S" + rule.arrSurvivesNeighborCount.join("");
+      const textNode = document.createTextNode(ruleText);
+      const pElement = document.createElement("p");
+      pElement.appendChild(textNode);
+      return pElement;
+    }
+
     function deriveIterationCountParagraph(iterationCount) {
         const labelTextNode = document.createTextNode("Iteration Count:");
         const spanElement = document.createElement("span");
@@ -199,7 +208,7 @@ const GameOfLifeHtmlGeneration_HtmlTable = function (gameOfLifeLogicModule) {
         const pElement = document.createElement("p");
         pElement.appendChild(labelTextNode);
         pElement.appendChild(spanElement);
-        return pElement
+        return pElement;
     }
 
     function deriveButton(value, fnClickHandler) {
@@ -246,6 +255,8 @@ const GameOfLifeHtmlGeneration_HtmlTable = function (gameOfLifeLogicModule) {
             fnResetHandler,
             fnRunHandler,
             fnStopHandler) {
+        const ruleDescriptionElement =
+          deriveRuleDescriptionElement();
         const iterationCountElement =
           deriveIterationCountParagraph(iterationCount);
         const boardTableElement =
@@ -262,6 +273,7 @@ const GameOfLifeHtmlGeneration_HtmlTable = function (gameOfLifeLogicModule) {
             fnRunHandler,
             fnStopHandler);
 
+        rootElement.appendChild(ruleDescriptionElement);
         rootElement.appendChild(iterationCountElement);
         rootElement.appendChild(boardPElement);
         rootElement.appendChild(buttonContainerElement);

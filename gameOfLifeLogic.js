@@ -106,6 +106,12 @@ const TwoDimensionalGameOfLifeLogic = function (arrBornNeighborCount, arrSurvive
         return iterationCount;
     }
 
+    function getBornAndSuvivesRule() {
+        return {
+            arrBornNeighborCount: arrBornNeighborCount,
+            arrSurvivesNeighborCount: arrSurvivesNeighborCount
+        }
+    }
     return {
         addSimpleGliderGoingUpAndLeft: addSimpleGliderGoingUpAndLeft,
         addSimpleGliderGoingDownAndRight: addSimpleGliderGoingDownAndRight,
@@ -114,6 +120,7 @@ const TwoDimensionalGameOfLifeLogic = function (arrBornNeighborCount, arrSurvive
         advanceOneStep: advanceOneStep,
         toggleCellLiveness: toggleCellLiveness,
         clearLiveCells: clearLiveCells,
-        getIterationCount: getIterationCount
+        getIterationCount: getIterationCount,
+        getBornAndSuvivesRule: getBornAndSuvivesRule
     }
 };
