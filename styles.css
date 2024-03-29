@@ -2,6 +2,10 @@ table {
     border-spacing: 0px;
 }
 
+table tr th {
+    font-weight: normal;
+}
+
 .noPadding {
     padding: 0px;
 }
