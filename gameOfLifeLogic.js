@@ -1,6 +1,6 @@
 "use strict";
 
-const GameOfLifeLogic = function () {
+const TwoDimensionalGameOfLifeLogic = function (arrBornNeighborCount, arrSurvivesNeighborCount) {
     function LiveCell(rowIndex, columnIndex) {
         this.rowIndex = rowIndex;
         this.columnIndex = columnIndex;
@@ -62,18 +62,18 @@ const GameOfLifeLogic = function () {
 
     function deriveNextSetOfLiveCellsFromCurrentLiveCells() {
         //find indexes just outside the live cells
-        const outerCoordinatesOfCells = outerCoordinatesOfLiveCells();
-        outerCoordinatesOfCells.minRowIndex -= 1;
-        outerCoordinatesOfCells.minColumnIndex -= 1;
-        outerCoordinatesOfCells.maxRowIndex += 1;
-        outerCoordinatesOfCells.maxColumnIndex += 1;
+        const liveCellCoordinatesExpandedBy1 = outerCoordinatesOfLiveCells();
+        liveCellCoordinatesExpandedBy1.minRowIndex -= 1;
+        liveCellCoordinatesExpandedBy1.minColumnIndex -= 1;
+        liveCellCoordinatesExpandedBy1.maxRowIndex += 1;
+        liveCellCoordinatesExpandedBy1.maxColumnIndex += 1;
 
         const newLiveCells = new Array();
-        for (let rowIndex = outerCoordinatesOfCells.minRowIndex; rowIndex <= outerCoordinatesOfCells.maxRowIndex; rowIndex++) {
-            for (let columnIndex = outerCoordinatesOfCells.minColumnIndex; columnIndex <= outerCoordinatesOfCells.maxColumnIndex; columnIndex++) {
+        for (let rowIndex = liveCellCoordinatesExpandedBy1.minRowIndex; rowIndex <= liveCellCoordinatesExpandedBy1.maxRowIndex; rowIndex++) {
+            for (let columnIndex = liveCellCoordinatesExpandedBy1.minColumnIndex; columnIndex <= liveCellCoordinatesExpandedBy1.maxColumnIndex; columnIndex++) {
                 const liveNeighborCount =
                   deriveNumberOfLiveNeighbors(rowIndex, columnIndex);
-                if ((isThereALiveCellAt(rowIndex, columnIndex) && (liveNeighborCount === 2 || liveNeighborCount === 3)) || liveNeighborCount === 3) {
+                if ((isThereALiveCellAt(rowIndex, columnIndex) && arrSurvivesNeighborCount.includes(liveNeighborCount)) || arrBornNeighborCount.includes(liveNeighborCount)) {
                     newLiveCells.push(new LiveCell(rowIndex, columnIndex));
                 }
             }
@@ -116,4 +116,4 @@ const GameOfLifeLogic = function () {
         clearLiveCells: clearLiveCells,
         getIterationCount: getIterationCount
     }
-}();
+};

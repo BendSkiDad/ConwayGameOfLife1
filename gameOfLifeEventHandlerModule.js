@@ -30,7 +30,7 @@ const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, g
             handleStopClick);
     }
 
-    function initializeGameOfLifeLogicModuleAndGetStartingBoardCoordinates() {
+    function seedGameOfLifeLogicAndGetStartingBoardCoordinates() {
         gameOfLifeLogicModule.clearLiveCells();
 
         gameOfLifeLogicModule.addSimpleGliderGoingUpAndLeft(2, 2);
@@ -50,14 +50,13 @@ const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, g
         }
         gameOfLifeLogicModule.clearLiveCells();
         const startingBoardCoordinates =
-          initializeGameOfLifeLogicModuleAndGetStartingBoardCoordinates();
+          seedGameOfLifeLogicAndGetStartingBoardCoordinates();
         const boardAsHtmlTableElement =
           gameOfLifeHtmlGenerationModule.deriveBoardUsingMinimumOuterCoordinatesAndLiveCells(
             startingBoardCoordinates,
             handleCellClick);
         document.querySelector("#board").replaceChildren(
             boardAsHtmlTableElement);
-        //gameOfLifeHtmlGenerationModule.updateIterationCount();
     }
 
     function handleCellClick(e) {
@@ -107,7 +106,7 @@ const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, g
 
     function initializePage(rootElement) {
         const startingBoardCoordinates =
-          initializeGameOfLifeLogicModuleAndGetStartingBoardCoordinates();
+          seedGameOfLifeLogicAndGetStartingBoardCoordinates();
         gameOfLifeHtmlGenerationModule.renderGameAndControlsInRootElement(
             rootElement,
             0,

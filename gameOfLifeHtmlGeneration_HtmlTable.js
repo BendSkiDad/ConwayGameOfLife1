@@ -1,6 +1,6 @@
 "use strict";
 
-const GameOfLifeHtmlGeneration_HtmlTable = function () {
+const GameOfLifeHtmlGeneration_HtmlTable = function (gameOfLifeLogicModule) {
     const rowIndexAttributeName = "rowIndex";
     const columnIndexAttributeName = "columnIndex";
     const iterationCountElementId = "iterationCount";
@@ -53,7 +53,7 @@ const GameOfLifeHtmlGeneration_HtmlTable = function () {
             tdElement.setAttribute(columnIndexAttributeName, columnIndex);
             tdElement.classList.add(gameOfLifeCellCSSClassToken);
             tdElement.addEventListener("click", fnHandleCellClick);
-            if (GameOfLifeLogic.isThereALiveCellAt(rowIndex, columnIndex)) {
+            if (gameOfLifeLogicModule.isThereALiveCellAt(rowIndex, columnIndex)) {
                 tdElement.setAttribute(liveAttributeName, "");
                 tdElement.classList.add(liveCellCSSClassToken);
             }
@@ -105,7 +105,7 @@ const GameOfLifeHtmlGeneration_HtmlTable = function () {
 
     function deriveBoardElement(boardOuterCoordinates, fnHandleCellClick) {
         const outerLiveCellCoordinates =
-          GameOfLifeLogic.outerCoordinatesOfLiveCells();
+        gameOfLifeLogicModule.outerCoordinatesOfLiveCells();
 
         //expand board outer coordinates if necessary
         boardOuterCoordinates.minRowIndex =
@@ -174,7 +174,7 @@ const GameOfLifeHtmlGeneration_HtmlTable = function () {
     function updateIterationCount() {
         const iterationCountDiv =
           document.getElementById(iterationCountElementId);
-        iterationCountDiv.textContent = GameOfLifeLogic.getIterationCount();
+        iterationCountDiv.textContent = gameOfLifeLogicModule.getIterationCount();
     }
 
     function deriveBoardUsingMinimumOuterCoordinatesAndLiveCells(minimumOuterCoordinates, fnCellClickHandler) {
@@ -278,4 +278,4 @@ const GameOfLifeHtmlGeneration_HtmlTable = function () {
         renderGameAndControlsInRootElement: renderGameAndControlsInRootElement,
         getCoordinatesFromClickEventTarget: getCoordinatesFromClickEventTarget
     };
-}();
+};

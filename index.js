@@ -1,9 +1,15 @@
 "use strict";
 
-const eventHandler =
+const arrBornNeighborCount = [3, 6];
+const arrSurvivesNeighborCount = [2, 3];
+const logicModule =
+  TwoDimensionalGameOfLifeLogic(arrBornNeighborCount, arrSurvivesNeighborCount);
+const htmlGenerationModule =
+    GameOfLifeHtmlGeneration_HtmlTable(logicModule);
+const eventHandlerModule =
     GameOfLifeEventHandlerModule(
-        GameOfLifeHtmlGeneration_HtmlTable,
-        GameOfLifeLogic);
+        htmlGenerationModule,
+        logicModule);
 const rootElement = document.getElementById("root");
-eventHandler.initializePage(rootElement);
+eventHandlerModule.initializePage(rootElement);
 
