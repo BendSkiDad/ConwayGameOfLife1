@@ -1,6 +1,6 @@
 "use strict";
 
-const arrBornNeighborCount = [3, 6];
+const arrBornNeighborCount = [3];
 const arrSurvivesNeighborCount = [2, 3];
 const logicModule =
   TwoDimensionalGameOfLifeLogic(arrBornNeighborCount, arrSurvivesNeighborCount);

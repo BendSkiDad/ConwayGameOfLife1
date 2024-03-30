@@ -216,6 +216,7 @@ const GameOfLifeHtmlGeneration_HtmlTable = function (gameOfLifeLogicModule) {
         button.setAttribute("type", "button");
         button.setAttribute("value", value);
         button.addEventListener("click", fnClickHandler);
+        button.classList.add("button");
         return button;
     }
 

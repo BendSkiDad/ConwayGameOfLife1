@@ -19,3 +19,10 @@ table tr th {
 .liveCell {
     background-color: yellow;
 }
+
+.button {
+    margin: 5px;
+    padding: 10px;
+    background-color: blue;
+    color: white;
+}
