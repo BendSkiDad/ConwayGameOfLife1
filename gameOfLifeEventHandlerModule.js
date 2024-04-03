@@ -115,8 +115,7 @@ const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, g
             handleAddRowClick,
             handleAddColumnClick,
             handleResetClick,
-            handleRunClick,
-            handleStopClick);
+            handleRunClick);
         elements.forEach(element => {
           rootElement.appendChild(element)
         });
