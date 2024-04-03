@@ -104,7 +104,7 @@ const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, g
         stop();
     }
 
-    function initializePage(rootElement) {
+    function initializePage() {
         const startingBoardCoordinates =
           seedGameOfLifeLogicAndGetStartingBoardCoordinates();
         const elements = gameOfLifeHtmlGenerationModule.deriveBoardAndControlElements(
@@ -116,9 +116,7 @@ const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, g
             handleAddColumnClick,
             handleSeedClick,
             handleRunClick);
-        elements.forEach(element => {
-          rootElement.appendChild(element)
-        });
+        return elements;
     }
 
     return {

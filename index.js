@@ -11,5 +11,7 @@ const eventHandlerModule =
         htmlGenerationModule,
         logicModule);
 const rootElement = document.getElementById("root");
-eventHandlerModule.initializePage(rootElement);
-
+const elements = eventHandlerModule.initializePage();
+elements.forEach(element => {
+  rootElement.appendChild(element)
+});
