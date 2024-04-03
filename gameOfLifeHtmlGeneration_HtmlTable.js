@@ -105,7 +105,7 @@ const GameOfLifeHtmlGeneration_HtmlTable = function (gameOfLifeLogicModule) {
 
     function deriveBoardElement(boardOuterCoordinates, fnHandleCellClick) {
         const outerLiveCellCoordinates =
-        gameOfLifeLogicModule.outerCoordinatesOfLiveCells();
+          gameOfLifeLogicModule.outerCoordinatesOfLiveCells();
 
         //expand board outer coordinates if necessary
         boardOuterCoordinates.minRowIndex =
@@ -245,8 +245,7 @@ const GameOfLifeHtmlGeneration_HtmlTable = function (gameOfLifeLogicModule) {
         return buttonContainerElement;
     }
 
-    function renderGameAndControlsInRootElement(
-            rootElement,
+    function deriveBoardAndControlElements(
             iterationCount,
             boardOuterCoordinates,
             fnCellClickHandler,
@@ -274,10 +273,11 @@ const GameOfLifeHtmlGeneration_HtmlTable = function (gameOfLifeLogicModule) {
             fnRunHandler,
             fnStopHandler);
 
-        rootElement.appendChild(ruleDescriptionElement);
-        rootElement.appendChild(iterationCountElement);
-        rootElement.appendChild(boardPElement);
-        rootElement.appendChild(buttonContainerElement);
+        return [
+          iterationCountElement,
+          boardPElement,
+          buttonContainerElement,
+          ruleDescriptionElement];
     }
 
     return {
@@ -288,7 +288,7 @@ const GameOfLifeHtmlGeneration_HtmlTable = function (gameOfLifeLogicModule) {
         updateIterationCount: updateIterationCount,
         deriveBoardUsingMinimumOuterCoordinatesAndLiveCells: deriveBoardUsingMinimumOuterCoordinatesAndLiveCells,
         deriveBoardUsingExistingBoardAndLiveCells: deriveBoardUsingExistingBoardAndLiveCells,
-        renderGameAndControlsInRootElement: renderGameAndControlsInRootElement,
+        deriveBoardAndControlElements: deriveBoardAndControlElements,
         getCoordinatesFromClickEventTarget: getCoordinatesFromClickEventTarget
     };
 };
