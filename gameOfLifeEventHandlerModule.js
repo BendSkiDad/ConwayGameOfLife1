@@ -30,20 +30,6 @@ const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, g
             handleStopClick);
     }
 
-    function seedGameOfLifeLogicAndGetStartingBoardCoordinates() {
-        gameOfLifeLogicModule.clearLiveCells();
-
-        gameOfLifeLogicModule.addSimpleGliderGoingUpAndLeft(2, 2);
-        gameOfLifeLogicModule.addSimpleGliderGoingDownAndRight(7, 77);
-        const startingBoardCoordinates = {
-            minRowIndex: 1,
-            minColumnIndex: 1,
-            maxRowIndex: 10,
-            maxColumnIndex: 80
-        };
-        return startingBoardCoordinates;
-    }
-
     function reset() {
         if (isRunning) {
             stop();
@@ -104,9 +90,7 @@ const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, g
         stop();
     }
 
-    function initializePage() {
-        const startingBoardCoordinates =
-          seedGameOfLifeLogicAndGetStartingBoardCoordinates();
+    function initializePage(startingBoardCoordinates) {
         const elements = gameOfLifeHtmlGenerationModule.deriveBoardAndControlElements(
             0,
             startingBoardCoordinates,
