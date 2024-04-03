@@ -2,7 +2,6 @@
 
 function seedGameOfLifeLogic(gameOfLifeLogicModule) {
   gameOfLifeLogicModule.clearLiveCells();
-
   gameOfLifeLogicModule.addSimpleGliderGoingUpAndLeft(2, 2);
   gameOfLifeLogicModule.addSimpleGliderGoingDownAndRight(7, 77);
 }
