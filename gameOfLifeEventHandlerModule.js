@@ -17,17 +17,13 @@ const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, g
     function start() {
         interval = setInterval(advanceOneStep, 1000);
         isRunning = true;
-        gameOfLifeHtmlGenerationModule.renderRunStopButtonAsStop(
-            handleRunClick,
-            handleStopClick);
+        gameOfLifeHtmlGenerationModule.renderRunStopButtonAsStop();
     }
 
     function stop() {
         clearInterval(interval);
         isRunning = false;
-        gameOfLifeHtmlGenerationModule.renderRunStopButtonAsRun(
-            handleRunClick,
-            handleStopClick);
+        gameOfLifeHtmlGenerationModule.renderRunStopButtonAsRun();
     }
 
     function clear() {
@@ -81,11 +77,11 @@ const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, g
     }
 
     function handleRunClick(e) {
-        start();
-    }
-
-    function handleStopClick(e) {
-        stop();
+        if(isRunning) {
+            stop();
+        } else {
+            start();
+        }
     }
 
     return {

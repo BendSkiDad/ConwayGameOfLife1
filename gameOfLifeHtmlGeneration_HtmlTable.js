@@ -157,18 +157,14 @@ const GameOfLifeHtmlGeneration_HtmlTable = function (gameOfLifeLogicModule) {
         return boardAsHtmlTableElement;
     }
 
-    function renderRunStopButtonAsRun(fnHandleRunClick, fnHandleStopClick) {
+    function renderRunStopButtonAsRun(fnHandleRunClick) {
         const runButton = document.getElementById("btnRun");
         runButton.value = "Run";
-        runButton.removeEventListener("click", fnHandleStopClick);
-        runButton.addEventListener("click", fnHandleRunClick);
     }
 
-    function renderRunStopButtonAsStop(fnHandleRunClick, fnHandleStopClick) {
+    function renderRunStopButtonAsStop() {
         const runButton = document.getElementById("btnRun");
         runButton.value = "Stop";
-        runButton.removeEventListener("click", fnHandleRunClick);
-        runButton.addEventListener("click", fnHandleStopClick);
     }
 
     function updateIterationCount() {
