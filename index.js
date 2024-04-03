@@ -1,10 +1,13 @@
 "use strict";
 
-function seedGameOfLifeLogicAndGetStartingBoardCoordinates(gameOfLifeLogicModule) {
+function seedGameOfLifeLogic(gameOfLifeLogicModule) {
   gameOfLifeLogicModule.clearLiveCells();
 
   gameOfLifeLogicModule.addSimpleGliderGoingUpAndLeft(2, 2);
   gameOfLifeLogicModule.addSimpleGliderGoingDownAndRight(7, 77);
+}
+
+function getStartingBoardCoordinates() {
   const startingBoardCoordinates = {
       minRowIndex: 1,
       minColumnIndex: 1,
@@ -14,7 +17,7 @@ function seedGameOfLifeLogicAndGetStartingBoardCoordinates(gameOfLifeLogicModule
   return startingBoardCoordinates;
 }
 
-function derivePageElements(startingBoardCoordinates) {
+function deriveHtmlPageElements(startingBoardCoordinates) {
   const elements = htmlGenerationModule.deriveBoardAndControlElements(
       0,
       startingBoardCoordinates,
@@ -27,21 +30,23 @@ function derivePageElements(startingBoardCoordinates) {
   return elements;
 }
 
+//Create the object graph
 const arrBornNeighborCount = [3];
 const arrSurvivesNeighborCount = [2, 3];
 const logicModule =
   TwoDimensionalGameOfLifeLogic(arrBornNeighborCount, arrSurvivesNeighborCount);
 const htmlGenerationModule =
     GameOfLifeHtmlGeneration_HtmlTable(logicModule);
-const startingBoardCoordinates =
-    seedGameOfLifeLogicAndGetStartingBoardCoordinates(logicModule);
+const startingBoardCoordinates = getStartingBoardCoordinates();
+seedGameOfLifeLogic(logicModule);
 const eventHandlerModule =
     GameOfLifeEventHandlerModule(
         htmlGenerationModule,
         logicModule,
         startingBoardCoordinates);
-const elements = derivePageElements(startingBoardCoordinates);
+
+const htmlElements = deriveHtmlPageElements(startingBoardCoordinates);
 const rootElement = document.getElementById("root");
-elements.forEach(element => {
+htmlElements.forEach(element => {
   rootElement.appendChild(element)
 });

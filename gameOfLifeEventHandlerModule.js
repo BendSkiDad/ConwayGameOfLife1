@@ -15,11 +15,11 @@ const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, g
     }
 
     function start() {
+        interval = setInterval(advanceOneStep, 1000);
+        isRunning = true;
         gameOfLifeHtmlGenerationModule.renderRunStopButtonAsStop(
             handleRunClick,
             handleStopClick);
-        interval = setInterval(advanceOneStep, 1000);
-        isRunning = true;
     }
 
     function stop() {
