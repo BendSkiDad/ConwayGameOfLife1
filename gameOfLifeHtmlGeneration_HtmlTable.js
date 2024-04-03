@@ -224,13 +224,13 @@ const GameOfLifeHtmlGeneration_HtmlTable = function (gameOfLifeLogicModule) {
             fnAdvanceOneStepHandler,
             fnAddRowHandler,
             fnAddColumnHandler,
-            fnSeedHandler,
+            fnClearHandler,
             fnRunHandler) {
         const advanceOneStepButton =
           deriveButton("Advance a step", fnAdvanceOneStepHandler);
         const addRowButton = deriveButton("Add Row", fnAddRowHandler);
         const addColumnButton = deriveButton("Add Column", fnAddColumnHandler);
-        const resetButton = deriveButton("Seed", fnSeedHandler);
+        const resetButton = deriveButton("Clear", fnClearHandler);
         const runButton = deriveButton("Run", fnRunHandler);
         runButton.setAttribute("id", "btnRun");
     
@@ -251,7 +251,7 @@ const GameOfLifeHtmlGeneration_HtmlTable = function (gameOfLifeLogicModule) {
             fnAdvanceOneStepHandler,
             fnAddRowHandler,
             fnAddColumnHandler,
-            fnSeedHandler,
+            fnClearHandler,
             fnRunHandler) {
         const ruleDescriptionElement =
           deriveRuleDescriptionElement();
@@ -267,7 +267,7 @@ const GameOfLifeHtmlGeneration_HtmlTable = function (gameOfLifeLogicModule) {
             fnAdvanceOneStepHandler,
             fnAddRowHandler,
             fnAddColumnHandler,
-            fnSeedHandler,
+            fnClearHandler,
             fnRunHandler);
 
         return [

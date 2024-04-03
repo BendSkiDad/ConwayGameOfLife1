@@ -1,6 +1,6 @@
 "use strict";
 
-const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, gameOfLifeLogicModule) {
+const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, gameOfLifeLogicModule, startingBoardCoordinates) {
     let interval;
     let isRunning = false;
 
@@ -30,13 +30,11 @@ const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, g
             handleStopClick);
     }
 
-    function reset() {
+    function clear() {
         if (isRunning) {
             stop();
         }
         gameOfLifeLogicModule.clearLiveCells();
-        const startingBoardCoordinates =
-          seedGameOfLifeLogicAndGetStartingBoardCoordinates();
         const boardAsHtmlTableElement =
           gameOfLifeHtmlGenerationModule.deriveBoardUsingMinimumOuterCoordinatesAndLiveCells(
             startingBoardCoordinates,
@@ -78,8 +76,8 @@ const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, g
             boardAsHtmlTableElement);
     }
 
-    function handleSeedClick() {
-        reset();
+    function handleClearClick() {
+        clear();
     }
 
     function handleRunClick(e) {
@@ -90,20 +88,12 @@ const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, g
         stop();
     }
 
-    function initializePage(startingBoardCoordinates) {
-        const elements = gameOfLifeHtmlGenerationModule.deriveBoardAndControlElements(
-            0,
-            startingBoardCoordinates,
-            handleCellClick,
-            handleAdvanceAStepClick,
-            handleAddRowClick,
-            handleAddColumnClick,
-            handleSeedClick,
-            handleRunClick);
-        return elements;
-    }
-
     return {
-        initializePage: initializePage
+        handleCellClick: handleCellClick,
+        handleAdvanceAStepClick: handleAdvanceAStepClick,
+        handleAddRowClick: handleAddRowClick,
+        handleAddColumnClick: handleAddColumnClick,
+        handleClearClick: handleClearClick,
+        handleRunClick: handleRunClick
     };
 };
