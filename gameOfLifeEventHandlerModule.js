@@ -92,7 +92,7 @@ const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, g
             boardAsHtmlTableElement);
     }
 
-    function handleResetClick() {
+    function handleSeedClick() {
         reset();
     }
 
@@ -114,7 +114,7 @@ const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, g
             handleAdvanceAStepClick,
             handleAddRowClick,
             handleAddColumnClick,
-            handleResetClick,
+            handleSeedClick,
             handleRunClick);
         elements.forEach(element => {
           rootElement.appendChild(element)
