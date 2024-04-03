@@ -7,13 +7,13 @@ function seedGameOfLifeLogic(gameOfLifeLogicModule) {
 }
 
 function getStartingBoardCoordinates() {
-  const startingBoardCoordinates = {
+  const rc = {
       minRowIndex: 1,
       minColumnIndex: 1,
       maxRowIndex: 10,
       maxColumnIndex: 80
   };
-  return startingBoardCoordinates;
+  return rc;
 }
 
 function deriveHtmlPageElements(startingBoardCoordinates) {
@@ -30,14 +30,14 @@ function deriveHtmlPageElements(startingBoardCoordinates) {
 }
 
 //Create the object graph
-const arrBornNeighborCount = [3];
-const arrSurvivesNeighborCount = [2, 3];
+const bornNeighborCounts = [3];
+const survivesNeighborCounts = [2, 3];
 const logicModule =
-  TwoDimensionalGameOfLifeLogic(arrBornNeighborCount, arrSurvivesNeighborCount);
+  TwoDimensionalGameOfLifeLogic(bornNeighborCounts, survivesNeighborCounts);
+seedGameOfLifeLogic(logicModule);
+const startingBoardCoordinates = getStartingBoardCoordinates();
 const htmlGenerationModule =
     GameOfLifeHtmlGeneration_HtmlTable(logicModule);
-const startingBoardCoordinates = getStartingBoardCoordinates();
-seedGameOfLifeLogic(logicModule);
 const eventHandlerModule =
     GameOfLifeEventHandlerModule(
         htmlGenerationModule,
