@@ -67,20 +67,20 @@ const GameOfLifeHtmlGeneration_HtmlTable = function (gameOfLifeLogicModule) {
     }
 
     function generateBoardAsTableHtmlElementFrom(
-            boardOuterCoordinates,
+            startingBoardCoordinates,
             fnHandleCellClick) {
         const tableElement = document.createElement("table");
         const boardHeaderTRElement =
           generateBoardHeaderTRElementFrom(
-            boardOuterCoordinates.minColumnIndex,
-            boardOuterCoordinates.maxColumnIndex);
+            startingBoardCoordinates.minColumnIndex,
+            startingBoardCoordinates.maxColumnIndex);
         tableElement.appendChild(boardHeaderTRElement);
-        for (let rowIndex = boardOuterCoordinates.minRowIndex; rowIndex <= boardOuterCoordinates.maxRowIndex; rowIndex++) {
+        for (let rowIndex = startingBoardCoordinates.minRowIndex; rowIndex <= startingBoardCoordinates.maxRowIndex; rowIndex++) {
             const rowElement =
               generateRowElementFrom(
                 rowIndex,
-                boardOuterCoordinates.minColumnIndex,
-                boardOuterCoordinates.maxColumnIndex,
+                startingBoardCoordinates.minColumnIndex,
+                startingBoardCoordinates.maxColumnIndex,
                 fnHandleCellClick);
             tableElement.appendChild(rowElement);
         }
@@ -103,30 +103,30 @@ const GameOfLifeHtmlGeneration_HtmlTable = function (gameOfLifeLogicModule) {
         return minAndMaxRowAndColumnIndexes;
     }
 
-    function deriveBoardElement(boardOuterCoordinates, fnHandleCellClick) {
+    function deriveBoardElement(startingBoardCoordinates, fnHandleCellClick) {
         const outerLiveCellCoordinates =
           gameOfLifeLogicModule.outerCoordinatesOfLiveCells();
 
         //expand board outer coordinates if necessary
-        boardOuterCoordinates.minRowIndex =
+        startingBoardCoordinates.minRowIndex =
           Math.min(
-            boardOuterCoordinates.minRowIndex,
+            startingBoardCoordinates.minRowIndex,
             outerLiveCellCoordinates.minRowIndex);
-        boardOuterCoordinates.minColumnIndex =
+        startingBoardCoordinates.minColumnIndex =
           Math.min(
-            boardOuterCoordinates.minColumnIndex,
+            startingBoardCoordinates.minColumnIndex,
             outerLiveCellCoordinates.minColumnIndex);
-        boardOuterCoordinates.maxRowIndex =
+        startingBoardCoordinates.maxRowIndex =
           Math.max(
-            boardOuterCoordinates.maxRowIndex,
+            startingBoardCoordinates.maxRowIndex,
             outerLiveCellCoordinates.maxRowIndex);
-        boardOuterCoordinates.maxColumnIndex =
+        startingBoardCoordinates.maxColumnIndex =
           Math.max(
-            boardOuterCoordinates.maxColumnIndex,
+            startingBoardCoordinates.maxColumnIndex,
             outerLiveCellCoordinates.maxColumnIndex);
         const boardAsHtmlTableElement =
           generateBoardAsTableHtmlElementFrom(
-            boardOuterCoordinates,
+            startingBoardCoordinates,
             fnHandleCellClick);
         return boardAsHtmlTableElement;
     }
@@ -173,9 +173,9 @@ const GameOfLifeHtmlGeneration_HtmlTable = function (gameOfLifeLogicModule) {
         iterationCountDiv.textContent = gameOfLifeLogicModule.getIterationCount();
     }
 
-    function deriveBoardUsingMinimumOuterCoordinatesAndLiveCells(minimumOuterCoordinates, fnCellClickHandler) {
+    function deriveBoardUsingMinimumOuterCoordinatesAndLiveCells(startingBoardCoordinates, fnCellClickHandler) {
         const boardAsHtmlTableElement =
-          deriveBoardElement(minimumOuterCoordinates, fnCellClickHandler);
+          deriveBoardElement(startingBoardCoordinates, fnCellClickHandler);
         return boardAsHtmlTableElement;
     }
 
@@ -242,7 +242,7 @@ const GameOfLifeHtmlGeneration_HtmlTable = function (gameOfLifeLogicModule) {
 
     function deriveBoardAndControlElements(
             iterationCount,
-            boardOuterCoordinates,
+            startingBoardCoordinates,
             fnCellClickHandler,
             fnAdvanceOneStepHandler,
             fnAddRowHandler,
@@ -254,7 +254,7 @@ const GameOfLifeHtmlGeneration_HtmlTable = function (gameOfLifeLogicModule) {
         const iterationCountElement =
           deriveIterationCountParagraph(iterationCount);
         const boardTableElement =
-          deriveBoardElement(boardOuterCoordinates, fnCellClickHandler);
+          deriveBoardElement(startingBoardCoordinates, fnCellClickHandler);
         const boardPElement = document.createElement("p");
         boardPElement.setAttribute("id", "board");
         boardPElement.appendChild(boardTableElement);

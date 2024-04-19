@@ -16,19 +16,6 @@ function getStartingBoardCoordinates() {
   return rc;
 }
 
-function deriveHtmlPageElements(startingBoardCoordinates) {
-  const elements = htmlGenerationModule.deriveBoardAndControlElements(
-      0,
-      startingBoardCoordinates,
-      eventHandlerModule.handleCellClick,
-      eventHandlerModule.handleAdvanceAStepClick,
-      eventHandlerModule.handleAddRowClick,
-      eventHandlerModule.handleAddColumnClick,
-      eventHandlerModule.handleClearClick,
-      eventHandlerModule.handleRunClick);
-  return elements;
-}
-
 //Create the object graph
 const bornNeighborCounts = [3];
 const survivesNeighborCounts = [2, 3];
@@ -44,7 +31,15 @@ const eventHandlerModule =
         logicModule,
         startingBoardCoordinates);
 
-const htmlElements = deriveHtmlPageElements(startingBoardCoordinates);
+const htmlElements = htmlGenerationModule.deriveBoardAndControlElements(
+    0,  //iterationCount
+    startingBoardCoordinates,
+    eventHandlerModule.handleCellClick,
+    eventHandlerModule.handleAdvanceAStepClick,
+    eventHandlerModule.handleAddRowClick,
+    eventHandlerModule.handleAddColumnClick,
+    eventHandlerModule.handleClearClick,
+    eventHandlerModule.handleRunClick);
 const rootElement = document.getElementById("root");
 htmlElements.forEach(element => {
   rootElement.appendChild(element)
