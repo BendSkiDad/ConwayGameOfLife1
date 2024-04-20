@@ -178,12 +178,12 @@ const GameOfLifeBoardGeneration_Canvas = function(gameOfLifeLogicModule, startin
     ctx.strokeStyle = "blue";
     ctx.lineWidth = 1;
     ctx.fillStyle = "grey";
-    for(let columnIndex = 0; columnIndex < columnCount; columnIndex++) {
-      for(let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-        let xCoord = columnIndex * (columnWidth + 1);
-        let yCoord = rowIndex * (rowHeight + 1);
+    for(let canvasColumnIndex = 0; canvasColumnIndex < columnCount; canvasColumnIndex++) {
+      for(let canvasRowIndex = 0; canvasRowIndex < rowCount; canvasRowIndex++) {
+        let xCoord = canvasColumnIndex * (columnWidth + 1);
+        let yCoord = canvasRowIndex * (rowHeight + 1);
         ctx.strokeRect(xCoord, yCoord, columnWidth, rowHeight);
-        if(gameOfLifeLogicModule.isThereALiveCellAt(rowIndex + 1, columnIndex + 1)) {
+        if(gameOfLifeLogicModule.isThereALiveCellAt(canvasRowIndex + currentBoardOuterCoordinates.minRowIndex, canvasColumnIndex + currentBoardOuterCoordinates.minColumnIndex)) {
           ctx.fillStyle = "yellow";
         }
         ctx.fillRect(xCoord, yCoord, columnWidth, rowHeight);
@@ -191,6 +191,11 @@ const GameOfLifeBoardGeneration_Canvas = function(gameOfLifeLogicModule, startin
       }
     }
     return canvasElement;
+  }
+
+  function getCoordinatesFromClickEventTarget(e) {
+    
+
   }
 
   function addRow() {
@@ -211,6 +216,7 @@ const GameOfLifeBoardGeneration_Canvas = function(gameOfLifeLogicModule, startin
   }
 
   return {
+    getCoordinatesFromClickEventTarget: getCoordinatesFromClickEventTarget,
     addRow: addRow,
     addColumn: addColumn,
     deriveBoardElement: deriveBoardElement
