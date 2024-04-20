@@ -26,22 +26,9 @@ const startingBoardCoordinates = {
 const boardGenerationModule =
   GameOfLifeBoardGeneration_Canvas(logicModule, startingBoardCoordinates, boardContainerElement);
 const controlHtmlGenerationModule =
-    GameOfLifeControlHtmlGeneration(logicModule);
-const eventHandlerModule =
-    GameOfLifeEventHandlerModule(
-        controlHtmlGenerationModule,
-        logicModule,
-        boardGenerationModule);
-
+    GameOfLifeControlHtmlGeneration(logicModule, boardGenerationModule);
 boardGenerationModule.updateBoardElement();
-
-const controlElements = controlHtmlGenerationModule.deriveControlElements(
-    0,  //iterationCount
-    eventHandlerModule.handleAdvanceAStepClick,
-    eventHandlerModule.handleAddRowClick,
-    eventHandlerModule.handleAddColumnClick,
-    eventHandlerModule.handleClearClick,
-    eventHandlerModule.handleRunClick);
+const controlElements = controlHtmlGenerationModule.deriveControlElements(0);  //iterationCount
 controlElements.forEach(element => {
   rootElement.appendChild(element)
 });

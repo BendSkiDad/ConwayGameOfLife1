@@ -1,6 +1,6 @@
 "use strict";
 
-const GameOfLifeControlHtmlGeneration = function (gameOfLifeLogicModule) {
+const GameOfLifeControlHtmlGeneration = function (gameOfLifeLogicModule, boardGenerationModule) {
     const iterationCountElementId = "iterationCount";
 
     function renderRunStopButtonAsRun() {
@@ -49,18 +49,13 @@ const GameOfLifeControlHtmlGeneration = function (gameOfLifeLogicModule) {
         return button;
     }
 
-    function deriveButtonContainerElement(
-            fnAdvanceOneStepHandler,
-            fnAddRowHandler,
-            fnAddColumnHandler,
-            fnClearHandler,
-            fnRunHandler) {
+    function deriveButtonContainerElement() {
         const advanceOneStepButton =
-          deriveButton("Advance a step", fnAdvanceOneStepHandler);
-        const addRowButton = deriveButton("Add Row", fnAddRowHandler);
-        const addColumnButton = deriveButton("Add Column", fnAddColumnHandler);
-        const resetButton = deriveButton("Clear", fnClearHandler);
-        const runButton = deriveButton("Run", fnRunHandler);
+          deriveButton("Advance a step", handleAdvanceAStepClick);
+        const addRowButton = deriveButton("Add Row", handleAddRowClick);
+        const addColumnButton = deriveButton("Add Column", handleAddColumnClick);
+        const resetButton = deriveButton("Clear", handleClearClick);
+        const runButton = deriveButton("Run", handleRunClick);
         runButton.setAttribute("id", "btnRun");
     
         const buttonContainerElement = document.createElement("div");
@@ -73,30 +68,75 @@ const GameOfLifeControlHtmlGeneration = function (gameOfLifeLogicModule) {
         return buttonContainerElement;
     }
 
-    function deriveControlElements(
-            iterationCount,
-            fnAdvanceOneStepHandler,
-            fnAddRowHandler,
-            fnAddColumnHandler,
-            fnClearHandler,
-            fnRunHandler) {
+    function deriveControlElements(iterationCount) {
         const ruleDescriptionElement =
           deriveRuleDescriptionElement();
         const iterationCountElement =
           deriveIterationCountParagraph(iterationCount);
 
-        const buttonContainerElement =
-          deriveButtonContainerElement(
-            fnAdvanceOneStepHandler,
-            fnAddRowHandler,
-            fnAddColumnHandler,
-            fnClearHandler,
-            fnRunHandler);
+        const buttonContainerElement = deriveButtonContainerElement();
 
         return [
           iterationCountElement,
           buttonContainerElement,
           ruleDescriptionElement];
+    }
+
+
+    //event handlers and their helper methods
+    let interval;
+    let isRunning = false;
+
+    function advanceOneStep() {
+        gameOfLifeLogicModule.advanceOneStep();
+        boardGenerationModule.updateBoardElement();
+        updateIterationCount();
+    }
+
+    function start() {
+        interval = setInterval(advanceOneStep, 1000);
+        isRunning = true;
+        renderRunStopButtonAsStop();
+    }
+
+    function stop() {
+        clearInterval(interval);
+        isRunning = false;
+        renderRunStopButtonAsRun();
+    }
+
+    function clear() {
+        if (isRunning) {
+            stop();
+        }
+        gameOfLifeLogicModule.clearLiveCells();
+        boardGenerationModule.updateBoardElement();
+    }
+
+    function handleAdvanceAStepClick() {
+        advanceOneStep();
+    }
+
+    function handleAddRowClick() {
+        boardGenerationModule.addRow();
+        boardGenerationModule.updateBoardElement();
+    }
+
+    function handleAddColumnClick() {
+        boardGenerationModule.addColumn();
+        boardGenerationModule.updateBoardElement();
+    }
+
+    function handleClearClick() {
+        clear();
+    }
+
+    function handleRunClick(e) {
+        if(isRunning) {
+            stop();
+        } else {
+            start();
+        }
     }
 
     return {
