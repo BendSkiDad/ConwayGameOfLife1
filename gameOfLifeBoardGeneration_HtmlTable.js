@@ -1,6 +1,6 @@
 "use strict";
 
-const GameOfLifeBoardGeneration_HtmlTable = function(gameOfLifeLogicModule, startingBoardCoordinates) {
+const GameOfLifeBoardGeneration_HtmlTable = function(gameOfLifeLogicModule, startingBoardCoordinates, boardContainerElement) {
   const rowIndexAttributeName = "rowIndex";
   const columnIndexAttributeName = "columnIndex";
   const liveAttributeName = "live";
@@ -125,7 +125,7 @@ const GameOfLifeBoardGeneration_HtmlTable = function(gameOfLifeLogicModule, star
     updateCurrentBoardOuterCoordinatesToReflectLiveCells();
     const boardAsHtmlTableElement =
       generateBoardAsTableHtmlElementFrom();
-    return boardAsHtmlTableElement;
+    boardContainerElement.replaceChildren(boardAsHtmlTableElement);
   }
 
   function handleCellClick(e) {
@@ -134,21 +134,17 @@ const GameOfLifeBoardGeneration_HtmlTable = function(gameOfLifeLogicModule, star
     gameOfLifeLogicModule.toggleCellLiveness(
         coordinates.rowIndex,
         coordinates.columnIndex);
-    const boardAsHtmlTableElement =
-        deriveBoardElement();
-    document.querySelector("#board").replaceChildren(
-        boardAsHtmlTableElement);
+    deriveBoardElement();
   }
 
   return {
-    //getCoordinatesFromClickEventTarget: getCoordinatesFromClickEventTarget,
     addRow: addRow,
     addColumn: addColumn,
     deriveBoardElement: deriveBoardElement
   };
 };
 
-const GameOfLifeBoardGeneration_Canvas = function(gameOfLifeLogicModule, startingBoardCoordinates) {
+const GameOfLifeBoardGeneration_Canvas = function(gameOfLifeLogicModule, startingBoardCoordinates, boardContainerElement) {
   const currentBoardOuterCoordinates = startingBoardCoordinates;
   const cellWidth = 13;
   const cellHeight = 13;
@@ -218,10 +214,9 @@ const GameOfLifeBoardGeneration_Canvas = function(gameOfLifeLogicModule, startin
 
   function deriveBoardElement() {
     updateCurrentBoardOuterCoordinatesToReflectLiveCells();
-    const boardAsHtmlCanvasElement =
-      generateBoardAsCanvasHtmlElementFrom();
-    return boardAsHtmlCanvasElement;
-  }
+    const boardAsHtmlCanvasElement = generateBoardAsCanvasHtmlElementFrom();
+    boardContainerElement.replaceChildren(boardAsHtmlCanvasElement);
+    }
 
   function handleCanvasClick(e) {
     const coordinates = {
@@ -231,10 +226,7 @@ const GameOfLifeBoardGeneration_Canvas = function(gameOfLifeLogicModule, startin
     gameOfLifeLogicModule.toggleCellLiveness(
         coordinates.rowIndex,
         coordinates.columnIndex);
-    const boardAsHtmlTableElement =
-        deriveBoardElement();
-    document.querySelector("#board").replaceChildren(
-        boardAsHtmlTableElement);
+    deriveBoardElement();
   }
 
   return {

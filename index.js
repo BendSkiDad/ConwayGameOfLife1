@@ -22,9 +22,9 @@ const startingBoardCoordinates = {
 };
 
 // const boardGenerationModule =
-//   GameOfLifeBoardGeneration_HtmlTable(logicModule, startingBoardCoordinates);
+//   GameOfLifeBoardGeneration_HtmlTable(logicModule, startingBoardCoordinates, boardContainerElement);
 const boardGenerationModule =
-  GameOfLifeBoardGeneration_Canvas(logicModule, startingBoardCoordinates);
+  GameOfLifeBoardGeneration_Canvas(logicModule, startingBoardCoordinates, boardContainerElement);
 const controlHtmlGenerationModule =
     GameOfLifeControlHtmlGeneration(logicModule);
 const eventHandlerModule =
@@ -33,11 +33,7 @@ const eventHandlerModule =
         logicModule,
         boardGenerationModule);
 
-// const boardElement =
-//     boardGenerationModule.deriveBoardElement();
-const boardElement =
-  boardGenerationModule.deriveBoardElement();
-boardContainerElement.appendChild(boardElement);
+boardGenerationModule.deriveBoardElement();
 
 const controlElements = controlHtmlGenerationModule.deriveControlElements(
     0,  //iterationCount

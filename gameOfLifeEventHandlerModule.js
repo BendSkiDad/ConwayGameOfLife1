@@ -6,10 +6,7 @@ const GameOfLifeEventHandlerModule = function (controlHtmlGenerationModule, game
 
     function advanceOneStep() {
         gameOfLifeLogicModule.advanceOneStep();
-        const boardElement =
-            boardGenerationModule.deriveBoardElement();
-        document.querySelector("#board").replaceChildren(
-            boardElement);
+        boardGenerationModule.deriveBoardElement();
         controlHtmlGenerationModule.updateIterationCount();
     }
 
@@ -30,10 +27,7 @@ const GameOfLifeEventHandlerModule = function (controlHtmlGenerationModule, game
             stop();
         }
         gameOfLifeLogicModule.clearLiveCells();
-        const boardElement =
-          boardGenerationModule.deriveBoardElement();
-        document.querySelector("#board").replaceChildren(
-            boardElement);
+        boardGenerationModule.deriveBoardElement();
     }
 
     function handleAdvanceAStepClick() {
@@ -42,18 +36,12 @@ const GameOfLifeEventHandlerModule = function (controlHtmlGenerationModule, game
 
     function handleAddRowClick() {
         boardGenerationModule.addRow();
-        const boardElement =
-            boardGenerationModule.deriveBoardElement();
-        document.querySelector("#board").replaceChildren(
-            boardElement);
+        boardGenerationModule.deriveBoardElement();
     }
 
     function handleAddColumnClick() {
         boardGenerationModule.addColumn();
-        const boardElement =
-            boardGenerationModule.deriveBoardElement();
-        document.querySelector("#board").replaceChildren(
-            boardElement);
+        boardGenerationModule.deriveBoardElement();
     }
 
     function handleClearClick() {
