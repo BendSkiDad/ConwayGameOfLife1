@@ -1,4 +1,5 @@
 "use strict";
+
 const GameOfLifeBoardGeneration_Canvas = function (gameOfLifeLogicModule, startingBoardCoordinates, boardContainerElement) {
   const currentBoardOuterCoordinates = startingBoardCoordinates;
   const cellWidth = 13;
