@@ -6,7 +6,7 @@ const GameOfLifeEventHandlerModule = function (controlHtmlGenerationModule, game
 
     function advanceOneStep() {
         gameOfLifeLogicModule.advanceOneStep();
-        boardGenerationModule.deriveBoardElement();
+        boardGenerationModule.updateBoardElement();
         controlHtmlGenerationModule.updateIterationCount();
     }
 
@@ -27,7 +27,7 @@ const GameOfLifeEventHandlerModule = function (controlHtmlGenerationModule, game
             stop();
         }
         gameOfLifeLogicModule.clearLiveCells();
-        boardGenerationModule.deriveBoardElement();
+        boardGenerationModule.updateBoardElement();
     }
 
     function handleAdvanceAStepClick() {
@@ -36,12 +36,12 @@ const GameOfLifeEventHandlerModule = function (controlHtmlGenerationModule, game
 
     function handleAddRowClick() {
         boardGenerationModule.addRow();
-        boardGenerationModule.deriveBoardElement();
+        boardGenerationModule.updateBoardElement();
     }
 
     function handleAddColumnClick() {
         boardGenerationModule.addColumn();
-        boardGenerationModule.deriveBoardElement();
+        boardGenerationModule.updateBoardElement();
     }
 
     function handleClearClick() {

@@ -33,7 +33,7 @@ const eventHandlerModule =
         logicModule,
         boardGenerationModule);
 
-boardGenerationModule.deriveBoardElement();
+boardGenerationModule.updateBoardElement();
 
 const controlElements = controlHtmlGenerationModule.deriveControlElements(
     0,  //iterationCount

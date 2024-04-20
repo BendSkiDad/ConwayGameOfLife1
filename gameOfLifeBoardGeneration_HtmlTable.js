@@ -121,7 +121,7 @@ const GameOfLifeBoardGeneration_HtmlTable = function(gameOfLifeLogicModule, star
     currentBoardOuterCoordinates.maxColumnIndex += 1;
   }
 
-  function deriveBoardElement() {
+  function updateBoardElement() {
     updateCurrentBoardOuterCoordinatesToReflectLiveCells();
     const boardAsHtmlTableElement =
       generateBoardAsTableHtmlElementFrom();
@@ -134,13 +134,13 @@ const GameOfLifeBoardGeneration_HtmlTable = function(gameOfLifeLogicModule, star
     gameOfLifeLogicModule.toggleCellLiveness(
         coordinates.rowIndex,
         coordinates.columnIndex);
-    deriveBoardElement();
+    updateBoardElement();
   }
 
   return {
     addRow: addRow,
     addColumn: addColumn,
-    deriveBoardElement: deriveBoardElement
+    updateBoardElement: updateBoardElement
   };
 };
 
@@ -212,7 +212,7 @@ const GameOfLifeBoardGeneration_Canvas = function(gameOfLifeLogicModule, startin
     currentBoardOuterCoordinates.maxColumnIndex += 1;
   }
 
-  function deriveBoardElement() {
+  function updateBoardElement() {
     updateCurrentBoardOuterCoordinatesToReflectLiveCells();
     const boardAsHtmlCanvasElement = generateBoardAsCanvasHtmlElementFrom();
     boardContainerElement.replaceChildren(boardAsHtmlCanvasElement);
@@ -226,12 +226,12 @@ const GameOfLifeBoardGeneration_Canvas = function(gameOfLifeLogicModule, startin
     gameOfLifeLogicModule.toggleCellLiveness(
         coordinates.rowIndex,
         coordinates.columnIndex);
-    deriveBoardElement();
+    updateBoardElement();
   }
 
   return {
     addRow: addRow,
     addColumn: addColumn,
-    deriveBoardElement: deriveBoardElement
+    updateBoardElement: updateBoardElement
   };
 };
