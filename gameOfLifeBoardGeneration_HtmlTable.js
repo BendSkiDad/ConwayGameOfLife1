@@ -150,7 +150,7 @@ const GameOfLifeBoardGeneration_HtmlTable = function(gameOfLifeLogicModule, star
 
 const GameOfLifeBoardGeneration_Canvas = function(gameOfLifeLogicModule, startingBoardCoordinates) {
   const currentBoardOuterCoordinates = startingBoardCoordinates;
-  const cellWidth = 10;
+  const cellWidth = 13;
   const cellHeight = 13;
   const lineBetweenCellsWidth = 1
 
