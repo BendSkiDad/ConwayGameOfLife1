@@ -7,7 +7,7 @@ const GameOfLifeEventHandlerModule = function (controlHtmlGenerationModule, game
     function advanceOneStep() {
         gameOfLifeLogicModule.advanceOneStep();
         const boardAsHtmlTableElement =
-        boardGenerationModule.deriveBoardElement(handleCellClick);
+            boardGenerationModule.deriveBoardElement(handleCellClick);
         document.querySelector("#board").replaceChildren(
             boardAsHtmlTableElement);
         controlHtmlGenerationModule.updateIterationCount();
@@ -38,7 +38,7 @@ const GameOfLifeEventHandlerModule = function (controlHtmlGenerationModule, game
 
     function handleCellClick(e) {
         const coordinates =
-          controlHtmlGenerationModule.getCoordinatesFromClickEventTarget(e);
+          boardGenerationModule.getCoordinatesFromClickEventTarget(e);
         gameOfLifeLogicModule.toggleCellLiveness(
             coordinates.rowIndex,
             coordinates.columnIndex);
@@ -80,12 +80,30 @@ const GameOfLifeEventHandlerModule = function (controlHtmlGenerationModule, game
         }
     }
 
+    function handleCanvasClick(e) {
+        alert("the canvas was clicked at clientX: " + e.clientX + " and clientY: " + e.clientY + " and pageX: " + e.pageX + " and pageY: " + e.pageY + " and offsetX: " + e.offsetX  + " and offsetY: " + e.offsetY);
+        const coordinates = {
+            rowIndex: 8,
+            columnIndex: 20
+        };
+        gameOfLifeLogicModule.toggleCellLiveness(
+            coordinates.rowIndex,
+            coordinates.columnIndex);
+        const boardAsHtmlTableElement =
+            boardGenerationModule.deriveBoardElement(handleCanvasClick);
+        document.querySelector("#board").replaceChildren(
+            boardAsHtmlTableElement);
+
+    }
+
     return {
         handleCellClick: handleCellClick,
         handleAdvanceAStepClick: handleAdvanceAStepClick,
         handleAddRowClick: handleAddRowClick,
         handleAddColumnClick: handleAddColumnClick,
         handleClearClick: handleClearClick,
-        handleRunClick: handleRunClick
+        handleRunClick: handleRunClick,
+
+        handleCanvasClick: handleCanvasClick
     };
 };

@@ -1,31 +1,9 @@
 "use strict";
 
 const GameOfLifeControlHtmlGeneration = function (gameOfLifeLogicModule) {
-    const rowIndexAttributeName = "rowIndex";
-    const columnIndexAttributeName = "columnIndex";
     const iterationCountElementId = "iterationCount";
 
-    function getRowIndexFrom(cellTDElement) {
-        const rowIndex =
-          Number(cellTDElement.getAttribute(rowIndexAttributeName));
-        return rowIndex;
-    }
-
-    function getColumnIndexFrom(cellTDElement) {
-        const columnIndex =
-          Number(cellTDElement.getAttribute(columnIndexAttributeName));
-        return columnIndex;
-    }
-
-    function getCoordinatesFromClickEventTarget(e) {
-      const tdElement = e.target;
-      return {
-        rowIndex: getRowIndexFrom(tdElement),
-        columnIndex: getColumnIndexFrom(tdElement)
-      };
-    }
-
-    function renderRunStopButtonAsRun(fnHandleRunClick) {
+    function renderRunStopButtonAsRun() {
         const runButton = document.getElementById("btnRun");
         runButton.value = "Run";
     }
@@ -95,7 +73,7 @@ const GameOfLifeControlHtmlGeneration = function (gameOfLifeLogicModule) {
         return buttonContainerElement;
     }
 
-    function deriveBoardAndControlElements(
+    function deriveControlElements(
             iterationCount,
             fnAdvanceOneStepHandler,
             fnAddRowHandler,
@@ -125,7 +103,6 @@ const GameOfLifeControlHtmlGeneration = function (gameOfLifeLogicModule) {
         renderRunStopButtonAsRun: renderRunStopButtonAsRun,
         renderRunStopButtonAsStop: renderRunStopButtonAsStop,
         updateIterationCount: updateIterationCount,
-        deriveBoardAndControlElements: deriveBoardAndControlElements,
-        getCoordinatesFromClickEventTarget: getCoordinatesFromClickEventTarget
+        deriveControlElements: deriveControlElements
     };
 };
