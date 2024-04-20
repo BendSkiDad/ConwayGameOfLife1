@@ -1,29 +1,28 @@
 "use strict";
 
-const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, gameOfLifeLogicModule, startingBoardCoordinates) {
+const GameOfLifeEventHandlerModule = function (controlHtmlGenerationModule, gameOfLifeLogicModule, boardGenerationModule) {
     let interval;
     let isRunning = false;
 
     function advanceOneStep() {
         gameOfLifeLogicModule.advanceOneStep();
         const boardAsHtmlTableElement =
-          gameOfLifeHtmlGenerationModule.deriveBoardUsingExistingBoardAndLiveCells(
-            handleCellClick);
+        boardGenerationModule.deriveBoardElement(handleCellClick);
         document.querySelector("#board").replaceChildren(
             boardAsHtmlTableElement);
-        gameOfLifeHtmlGenerationModule.updateIterationCount();
+        controlHtmlGenerationModule.updateIterationCount();
     }
 
     function start() {
         interval = setInterval(advanceOneStep, 1000);
         isRunning = true;
-        gameOfLifeHtmlGenerationModule.renderRunStopButtonAsStop();
+        controlHtmlGenerationModule.renderRunStopButtonAsStop();
     }
 
     function stop() {
         clearInterval(interval);
         isRunning = false;
-        gameOfLifeHtmlGenerationModule.renderRunStopButtonAsRun();
+        controlHtmlGenerationModule.renderRunStopButtonAsRun();
     }
 
     function clear() {
@@ -32,22 +31,19 @@ const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, g
         }
         gameOfLifeLogicModule.clearLiveCells();
         const boardAsHtmlTableElement =
-          gameOfLifeHtmlGenerationModule.deriveBoardUsingMinimumOuterCoordinatesAndLiveCells(
-            startingBoardCoordinates,
-            handleCellClick);
+          boardGenerationModule.deriveBoardElement(handleCellClick);
         document.querySelector("#board").replaceChildren(
             boardAsHtmlTableElement);
     }
 
     function handleCellClick(e) {
         const coordinates =
-          gameOfLifeHtmlGenerationModule.getCoordinatesFromClickEventTarget(e);
+          controlHtmlGenerationModule.getCoordinatesFromClickEventTarget(e);
         gameOfLifeLogicModule.toggleCellLiveness(
             coordinates.rowIndex,
             coordinates.columnIndex);
         const boardAsHtmlTableElement =
-          gameOfLifeHtmlGenerationModule.deriveBoardUsingExistingBoardAndLiveCells(
-              handleCellClick);
+            boardGenerationModule.deriveBoardElement(handleCellClick);
         document.querySelector("#board").replaceChildren(
             boardAsHtmlTableElement);
     }
@@ -57,17 +53,17 @@ const GameOfLifeEventHandlerModule = function (gameOfLifeHtmlGenerationModule, g
     }
 
     function handleAddRowClick() {
+        boardGenerationModule.addRow();
         const boardAsHtmlTableElement =
-          gameOfLifeHtmlGenerationModule.deriveBoardWithAdditionalRow(
-            handleCellClick);
+            boardGenerationModule.deriveBoardElement(handleCellClick);
         document.querySelector("#board").replaceChildren(
             boardAsHtmlTableElement);
     }
 
     function handleAddColumnClick() {
+        boardGenerationModule.addColumn();
         const boardAsHtmlTableElement =
-          gameOfLifeHtmlGenerationModule.deriveBoardWithAdditionalColumn(
-            handleCellClick);
+            boardGenerationModule.deriveBoardElement(handleCellClick);
         document.querySelector("#board").replaceChildren(
             boardAsHtmlTableElement);
     }
