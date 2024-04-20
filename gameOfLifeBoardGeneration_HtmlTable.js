@@ -149,7 +149,10 @@ const GameOfLifeBoardGeneration_HtmlTable = function(gameOfLifeLogicModule, star
 };
 
 const GameOfLifeBoardGeneration_Canvas = function(gameOfLifeLogicModule, startingBoardCoordinates) {
-  let currentBoardOuterCoordinates = startingBoardCoordinates;
+  const currentBoardOuterCoordinates = startingBoardCoordinates;
+  const cellWidth = 10;
+  const cellHeight = 13;
+  const lineBetweenCellsWidth = 1
 
   function updateCurrentBoardOuterCoordinatesToReflectLiveCells() {
     const outerLiveCellCoordinates =
@@ -178,25 +181,25 @@ const GameOfLifeBoardGeneration_Canvas = function(gameOfLifeLogicModule, startin
     const canvasElement = document.createElement("canvas");
     const columnCount = currentBoardOuterCoordinates.maxColumnIndex - currentBoardOuterCoordinates.minColumnIndex + 1;
     const rowCount = currentBoardOuterCoordinates.maxRowIndex - currentBoardOuterCoordinates.minRowIndex + 1;
-    const columnWidth = 10;
-    const rowHeight = 13;
     canvasElement.setAttribute("id", "idCanvas");
-    canvasElement.width = columnCount * columnWidth + columnCount - 1;
-    canvasElement.height = rowCount * rowHeight + rowCount - 1;
+    canvasElement.width = columnCount * cellWidth + columnCount - 1;
+    canvasElement.height = rowCount * cellHeight + rowCount - 1;
     canvasElement.addEventListener("click", handleCanvasClick);
     const ctx = canvasElement.getContext("2d");
     ctx.strokeStyle = "blue";
-    ctx.lineWidth = 1;
+    ctx.lineWidth = lineBetweenCellsWidth;
     ctx.fillStyle = "grey";
     for(let canvasColumnIndex = 0; canvasColumnIndex < columnCount; canvasColumnIndex++) {
       for(let canvasRowIndex = 0; canvasRowIndex < rowCount; canvasRowIndex++) {
-        let xCoord = canvasColumnIndex * (columnWidth + 1);
-        let yCoord = canvasRowIndex * (rowHeight + 1);
-        ctx.strokeRect(xCoord, yCoord, columnWidth, rowHeight);
-        if(gameOfLifeLogicModule.isThereALiveCellAt(canvasRowIndex + currentBoardOuterCoordinates.minRowIndex, canvasColumnIndex + currentBoardOuterCoordinates.minColumnIndex)) {
+        let xCoord = canvasColumnIndex * (cellWidth + 1);
+        let yCoord = canvasRowIndex * (cellHeight + 1);
+        ctx.strokeRect(xCoord, yCoord, cellWidth, cellHeight);
+        let logicRowIndex = canvasRowIndex + currentBoardOuterCoordinates.minRowIndex;
+        let logicColumnIndex = canvasColumnIndex + currentBoardOuterCoordinates.minColumnIndex;
+        if(gameOfLifeLogicModule.isThereALiveCellAt(logicRowIndex, logicColumnIndex)) {
           ctx.fillStyle = "yellow";
         }
-        ctx.fillRect(xCoord, yCoord, columnWidth, rowHeight);
+        ctx.fillRect(xCoord, yCoord, cellWidth, cellHeight);
         ctx.fillStyle = "grey";
       }
     }
@@ -221,10 +224,9 @@ const GameOfLifeBoardGeneration_Canvas = function(gameOfLifeLogicModule, startin
   }
 
   function handleCanvasClick(e) {
-    alert("the canvas was clicked at clientX: " + e.clientX + " and clientY: " + e.clientY + " and pageX: " + e.pageX + " and pageY: " + e.pageY + " and offsetX: " + e.offsetX  + " and offsetY: " + e.offsetY);
     const coordinates = {
-        rowIndex: 8,
-        columnIndex: 20
+        rowIndex: Math.trunc(e.offsetY / (cellHeight + lineBetweenCellsWidth)) +  currentBoardOuterCoordinates.minRowIndex,
+        columnIndex: Math.trunc(e.offsetX / (cellWidth + lineBetweenCellsWidth)) + currentBoardOuterCoordinates.minColumnIndex
     };
     gameOfLifeLogicModule.toggleCellLiveness(
         coordinates.rowIndex,
@@ -236,7 +238,6 @@ const GameOfLifeBoardGeneration_Canvas = function(gameOfLifeLogicModule, startin
   }
 
   return {
-    //getCoordinatesFromClickEventTarget: getCoordinatesFromClickEventTarget,
     addRow: addRow,
     addColumn: addColumn,
     deriveBoardElement: deriveBoardElement
