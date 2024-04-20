@@ -18,20 +18,20 @@ const startingBoardCoordinates = {
   maxRowIndex: 10,
   maxColumnIndex: 80
 };
-//const htmlBoardGenerationModule = GameOfLifeBoardGeneration_HtmlTable(logicModule, startingBoardCoordinates);
-const htmlBoardGenerationModule = GameOfLifeBoardGeneration_Canvas(logicModule, startingBoardCoordinates);
+//const boardGenerationModule = GameOfLifeBoardGeneration_HtmlTable(logicModule, startingBoardCoordinates);
+const boardGenerationModule = GameOfLifeBoardGeneration_Canvas(logicModule, startingBoardCoordinates);
 const controlHtmlGenerationModule =
     GameOfLifeControlHtmlGeneration(logicModule);
 const eventHandlerModule =
     GameOfLifeEventHandlerModule(
         controlHtmlGenerationModule,
         logicModule,
-        htmlBoardGenerationModule);
+        boardGenerationModule);
 
 // const boardElement =
-//     htmlBoardGenerationModule.deriveBoardElement(eventHandlerModule.handleCellClick);
+//     boardGenerationModule.deriveBoardElement();
 const boardElement =
-    htmlBoardGenerationModule.deriveBoardElement(eventHandlerModule.handleCanvasClick);
+    boardGenerationModule.deriveBoardElement();
 const boardPElement = document.createElement("p");
 boardPElement.setAttribute("id", "board");
 boardPElement.appendChild(boardElement);

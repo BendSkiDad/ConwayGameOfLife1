@@ -69,8 +69,7 @@ const GameOfLifeBoardGeneration_HtmlTable = function(gameOfLifeLogicModule, star
   }
 
   function generateRowElementFrom(
-        rowIndex,
-        fnHandleCellClick) {
+        rowIndex) {
     const tdElement = document.createElement("td");
     tdElement.classList.add("noPadding");
     const textNode = document.createTextNode(Math.abs(rowIndex % 10));
@@ -82,7 +81,7 @@ const GameOfLifeBoardGeneration_HtmlTable = function(gameOfLifeLogicModule, star
         tdElement.setAttribute(rowIndexAttributeName, rowIndex);
         tdElement.setAttribute(columnIndexAttributeName, columnIndex);
         tdElement.classList.add(gameOfLifeCellCSSClassToken);
-        tdElement.addEventListener("click", fnHandleCellClick);
+        tdElement.addEventListener("click", handleCellClick);
         if (gameOfLifeLogicModule.isThereALiveCellAt(rowIndex, columnIndex)) {
             tdElement.setAttribute(liveAttributeName, "");
             tdElement.classList.add(liveCellCSSClassToken);
@@ -96,7 +95,7 @@ const GameOfLifeBoardGeneration_HtmlTable = function(gameOfLifeLogicModule, star
     return rc;
   }
 
-  function generateBoardAsTableHtmlElementFrom(fnHandleCellClick) {
+  function generateBoardAsTableHtmlElementFrom() {
     const tableElement = document.createElement("table");
     const boardHeaderTRElement =
       generateBoardHeaderTRElementFrom(
@@ -106,8 +105,7 @@ const GameOfLifeBoardGeneration_HtmlTable = function(gameOfLifeLogicModule, star
     for (let rowIndex = currentBoardOuterCoordinates.minRowIndex; rowIndex <= currentBoardOuterCoordinates.maxRowIndex; rowIndex++) {
         const rowElement =
           generateRowElementFrom(
-            rowIndex,
-            fnHandleCellClick);
+            rowIndex);
         tableElement.appendChild(rowElement);
     }
     return tableElement;
@@ -123,15 +121,27 @@ const GameOfLifeBoardGeneration_HtmlTable = function(gameOfLifeLogicModule, star
     currentBoardOuterCoordinates.maxColumnIndex += 1;
   }
 
-  function deriveBoardElement(fnHandleCellClick) {
+  function deriveBoardElement() {
     updateCurrentBoardOuterCoordinatesToReflectLiveCells();
     const boardAsHtmlTableElement =
-      generateBoardAsTableHtmlElementFrom(fnHandleCellClick);
+      generateBoardAsTableHtmlElementFrom();
     return boardAsHtmlTableElement;
   }
 
+  function handleCellClick(e) {
+    const coordinates =
+      getCoordinatesFromClickEventTarget(e);
+    gameOfLifeLogicModule.toggleCellLiveness(
+        coordinates.rowIndex,
+        coordinates.columnIndex);
+    const boardAsHtmlTableElement =
+        deriveBoardElement();
+    document.querySelector("#board").replaceChildren(
+        boardAsHtmlTableElement);
+  }
+
   return {
-    getCoordinatesFromClickEventTarget: getCoordinatesFromClickEventTarget,
+    //getCoordinatesFromClickEventTarget: getCoordinatesFromClickEventTarget,
     addRow: addRow,
     addColumn: addColumn,
     deriveBoardElement: deriveBoardElement
@@ -164,7 +174,7 @@ const GameOfLifeBoardGeneration_Canvas = function(gameOfLifeLogicModule, startin
         outerLiveCellCoordinates.maxColumnIndex);
   }
 
-  function generateBoardAsCanvasHtmlElementFrom(fnCanvasClickHandler) {
+  function generateBoardAsCanvasHtmlElementFrom() {
     const canvasElement = document.createElement("canvas");
     const columnCount = currentBoardOuterCoordinates.maxColumnIndex - currentBoardOuterCoordinates.minColumnIndex + 1;
     const rowCount = currentBoardOuterCoordinates.maxRowIndex - currentBoardOuterCoordinates.minRowIndex + 1;
@@ -173,7 +183,7 @@ const GameOfLifeBoardGeneration_Canvas = function(gameOfLifeLogicModule, startin
     canvasElement.setAttribute("id", "idCanvas");
     canvasElement.width = columnCount * columnWidth + columnCount - 1;
     canvasElement.height = rowCount * rowHeight + rowCount - 1;
-    canvasElement.addEventListener("click", fnCanvasClickHandler);
+    canvasElement.addEventListener("click", handleCanvasClick);
     const ctx = canvasElement.getContext("2d");
     ctx.strokeStyle = "blue";
     ctx.lineWidth = 1;
@@ -193,11 +203,6 @@ const GameOfLifeBoardGeneration_Canvas = function(gameOfLifeLogicModule, startin
     return canvasElement;
   }
 
-  function getCoordinatesFromClickEventTarget(e) {
-    
-
-  }
-
   function addRow() {
     updateCurrentBoardOuterCoordinatesToReflectLiveCells();
     currentBoardOuterCoordinates.maxRowIndex += 1;
@@ -208,15 +213,30 @@ const GameOfLifeBoardGeneration_Canvas = function(gameOfLifeLogicModule, startin
     currentBoardOuterCoordinates.maxColumnIndex += 1;
   }
 
-  function deriveBoardElement(fnHandleCanvasClick) {
+  function deriveBoardElement() {
     updateCurrentBoardOuterCoordinatesToReflectLiveCells();
     const boardAsHtmlCanvasElement =
-      generateBoardAsCanvasHtmlElementFrom(fnHandleCanvasClick);
+      generateBoardAsCanvasHtmlElementFrom();
     return boardAsHtmlCanvasElement;
   }
 
+  function handleCanvasClick(e) {
+    alert("the canvas was clicked at clientX: " + e.clientX + " and clientY: " + e.clientY + " and pageX: " + e.pageX + " and pageY: " + e.pageY + " and offsetX: " + e.offsetX  + " and offsetY: " + e.offsetY);
+    const coordinates = {
+        rowIndex: 8,
+        columnIndex: 20
+    };
+    gameOfLifeLogicModule.toggleCellLiveness(
+        coordinates.rowIndex,
+        coordinates.columnIndex);
+    const boardAsHtmlTableElement =
+        deriveBoardElement();
+    document.querySelector("#board").replaceChildren(
+        boardAsHtmlTableElement);
+  }
+
   return {
-    getCoordinatesFromClickEventTarget: getCoordinatesFromClickEventTarget,
+    //getCoordinatesFromClickEventTarget: getCoordinatesFromClickEventTarget,
     addRow: addRow,
     addColumn: addColumn,
     deriveBoardElement: deriveBoardElement

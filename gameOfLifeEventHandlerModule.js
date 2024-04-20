@@ -6,10 +6,10 @@ const GameOfLifeEventHandlerModule = function (controlHtmlGenerationModule, game
 
     function advanceOneStep() {
         gameOfLifeLogicModule.advanceOneStep();
-        const boardAsHtmlTableElement =
-            boardGenerationModule.deriveBoardElement(handleCellClick);
+        const boardElement =
+            boardGenerationModule.deriveBoardElement();
         document.querySelector("#board").replaceChildren(
-            boardAsHtmlTableElement);
+            boardElement);
         controlHtmlGenerationModule.updateIterationCount();
     }
 
@@ -30,22 +30,10 @@ const GameOfLifeEventHandlerModule = function (controlHtmlGenerationModule, game
             stop();
         }
         gameOfLifeLogicModule.clearLiveCells();
-        const boardAsHtmlTableElement =
-          boardGenerationModule.deriveBoardElement(handleCellClick);
+        const boardElement =
+          boardGenerationModule.deriveBoardElement();
         document.querySelector("#board").replaceChildren(
-            boardAsHtmlTableElement);
-    }
-
-    function handleCellClick(e) {
-        const coordinates =
-          boardGenerationModule.getCoordinatesFromClickEventTarget(e);
-        gameOfLifeLogicModule.toggleCellLiveness(
-            coordinates.rowIndex,
-            coordinates.columnIndex);
-        const boardAsHtmlTableElement =
-            boardGenerationModule.deriveBoardElement(handleCellClick);
-        document.querySelector("#board").replaceChildren(
-            boardAsHtmlTableElement);
+            boardElement);
     }
 
     function handleAdvanceAStepClick() {
@@ -54,18 +42,18 @@ const GameOfLifeEventHandlerModule = function (controlHtmlGenerationModule, game
 
     function handleAddRowClick() {
         boardGenerationModule.addRow();
-        const boardAsHtmlTableElement =
-            boardGenerationModule.deriveBoardElement(handleCellClick);
+        const boardElement =
+            boardGenerationModule.deriveBoardElement();
         document.querySelector("#board").replaceChildren(
-            boardAsHtmlTableElement);
+            boardElement);
     }
 
     function handleAddColumnClick() {
         boardGenerationModule.addColumn();
-        const boardAsHtmlTableElement =
-            boardGenerationModule.deriveBoardElement(handleCellClick);
+        const boardElement =
+            boardGenerationModule.deriveBoardElement();
         document.querySelector("#board").replaceChildren(
-            boardAsHtmlTableElement);
+            boardElement);
     }
 
     function handleClearClick() {
@@ -80,30 +68,11 @@ const GameOfLifeEventHandlerModule = function (controlHtmlGenerationModule, game
         }
     }
 
-    function handleCanvasClick(e) {
-        alert("the canvas was clicked at clientX: " + e.clientX + " and clientY: " + e.clientY + " and pageX: " + e.pageX + " and pageY: " + e.pageY + " and offsetX: " + e.offsetX  + " and offsetY: " + e.offsetY);
-        const coordinates = {
-            rowIndex: 8,
-            columnIndex: 20
-        };
-        gameOfLifeLogicModule.toggleCellLiveness(
-            coordinates.rowIndex,
-            coordinates.columnIndex);
-        const boardAsHtmlTableElement =
-            boardGenerationModule.deriveBoardElement(handleCanvasClick);
-        document.querySelector("#board").replaceChildren(
-            boardAsHtmlTableElement);
-
-    }
-
     return {
-        handleCellClick: handleCellClick,
         handleAdvanceAStepClick: handleAdvanceAStepClick,
         handleAddRowClick: handleAddRowClick,
         handleAddColumnClick: handleAddColumnClick,
         handleClearClick: handleClearClick,
-        handleRunClick: handleRunClick,
-
-        handleCanvasClick: handleCanvasClick
+        handleRunClick: handleRunClick
     };
 };
