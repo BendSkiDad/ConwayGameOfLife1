@@ -1,9 +1,13 @@
+'use strict'
+
 import { GridUtilities } from './gridUtilities.js'
 
 export const TwoDimensionalGameOfLifeLogic = function (arrBornNeighborCount, arrSurvivesNeighborCount) {
-  function LiveCell (rowIndex, columnIndex) {
-    this.rowIndex = rowIndex
-    this.columnIndex = columnIndex
+  class LiveCell {
+    constructor (rowIndex, columnIndex) {
+      this.rowIndex = rowIndex
+      this.columnIndex = columnIndex
+    }
   }
 
   let liveCells = []

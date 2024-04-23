@@ -1,3 +1,5 @@
+'use strict'
+
 import { TwoDimensionalGameOfLifeLogic } from './gameOfLifeLogic.js'
 // import { GameOfLifeBoardGeneration } from './gameOfLifeBoardGeneration_HtmlTable.js'
 import { GameOfLifeBoardGeneration } from './gameOfLifeBoardGeneration_Canvas.js'

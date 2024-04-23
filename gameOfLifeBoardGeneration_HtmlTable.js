@@ -1,3 +1,5 @@
+'use strict'
+
 export const GameOfLifeBoardGeneration = function (gameOfLifeLogicModule, startingBoardCoordinates, boardContainerElement) {
   const rowIndexAttributeName = 'rowIndex'
   const columnIndexAttributeName = 'columnIndex'

@@ -1,3 +1,5 @@
+'use strict'
+
 export const GridUtilities = function () {
   function deriveMinAndMaxRowAndColumnIndexesFrom (rowIndexes, columnIndexes) {
     const minRowIndex = Math.min(...rowIndexes)
