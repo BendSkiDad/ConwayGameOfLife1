@@ -8,6 +8,17 @@ export const TwoDimensionalGameOfLifeLogic = function (arrBornNeighborCount, arr
       this.rowIndex = rowIndex
       this.columnIndex = columnIndex
     }
+
+    isNeighborOf(rowIndex, columnIndex) {
+      return this.rowIndex >= rowIndex - 1 &&
+        this.rowIndex <= rowIndex + 1 &&
+        this.columnIndex >= columnIndex - 1 &&
+        this.columnIndex <= columnIndex + 1
+    }
+
+    isMe(rowIndex, columnIndex) {
+      return this.rowIndex === rowIndex && this.columnIndex === columnIndex
+    }
   }
 
   let liveCells = []
@@ -45,19 +56,14 @@ export const TwoDimensionalGameOfLifeLogic = function (arrBornNeighborCount, arr
   }
 
   function isThereALiveCellAt (rowIndex, columnIndex) {
-    const matchingLiveCells = liveCells.filter(function (liveCell) {
+    return liveCells.some(function(liveCell) {
       return liveCell.rowIndex === rowIndex && liveCell.columnIndex === columnIndex
     })
-    return matchingLiveCells.length
   }
 
   function deriveNumberOfLiveNeighbors (rowIndex, columnIndex) {
     const liveNeighborCells = liveCells.filter(function (liveCell) {
-      return liveCell.rowIndex >= rowIndex - 1 &&
-        liveCell.rowIndex <= rowIndex + 1 &&
-        liveCell.columnIndex >= columnIndex - 1 &&
-        liveCell.columnIndex <= columnIndex + 1 &&
-        !(liveCell.rowIndex === rowIndex && liveCell.columnIndex === columnIndex)
+      return liveCell.isNeighborOf(rowIndex, columnIndex) && !liveCell.isMe(rowIndex, columnIndex)
     })
     return liveNeighborCells.length
   }
@@ -90,7 +96,7 @@ export const TwoDimensionalGameOfLifeLogic = function (arrBornNeighborCount, arr
 
   function toggleCellLiveness (rowIndex, columnIndex) {
     const index = liveCells.findIndex(function (liveCell) {
-      return liveCell.rowIndex === rowIndex && liveCell.columnIndex === columnIndex
+      return liveCell.isMe(rowIndex, columnIndex)
     })
     if (index === -1) {
       liveCells.push(new LiveCell(rowIndex, columnIndex))
