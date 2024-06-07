@@ -1,8 +1,7 @@
 'use strict'
 import * as logic from "./gameOfLifeLogic.js"
-import { TwoDimensionalGameOfLifeLogic } from './gameOfLifeLogic.js'
-// import { GameOfLifeBoardGeneration } from './gameOfLifeBoardGeneration_HtmlTable.js'
-import { GameOfLifeBoardGeneration } from './gameOfLifeBoardGeneration_Canvas.js'
+import { GameOfLifeBoardGeneration } from './gameOfLifeBoardGeneration_HtmlTable.js'
+//import { GameOfLifeBoardGeneration } from './gameOfLifeBoardGeneration_Canvas.js'
 import { GameOfLifeControlHtmlGeneration } from './gameOfLifeControlHtmlGeneration.js'
 
 // create and add a container element for the board
@@ -11,25 +10,24 @@ boardContainerElement.setAttribute('id', 'board')
 const rootElement = document.getElementById('root')
 rootElement.appendChild(boardContainerElement)
 
-// Create and seed the object graph
-const bornNeighborCounts = [3]
-const survivesNeighborCounts = [2, 3]
-const logicModule =
-  TwoDimensionalGameOfLifeLogic(bornNeighborCounts, survivesNeighborCounts)
-
-  logicModule.clearLiveCells()
-logicModule.addSimpleGliderGoingUpAndLeft(2, 2)
-logicModule.addSimpleGliderGoingDownAndRight(7, 7)
+logic.clearLiveCells()
+logic.addSimpleGliderGoingUpAndLeft(2, 2)
+logic.addSimpleGliderGoingDownAndRight(7, 7)
 
 const startingUpperLeftCell = new logic.Cell(1, 1)
 const startingLowerRightCell = new logic.Cell(10, 20)
-const startingBoardExtent = new logic.CellExtent(startingUpperLeftCell, startingLowerRightCell)
+const startingBoardExtent =
+    new logic.CellExtent(
+        startingUpperLeftCell,
+        startingLowerRightCell
+    )
 const boardGenerationModule =
-  GameOfLifeBoardGeneration(startingBoardExtent, logicModule, boardContainerElement)
+    GameOfLifeBoardGeneration(startingBoardExtent, boardContainerElement)
 const controlHtmlGenerationModule =
-    GameOfLifeControlHtmlGeneration(logicModule, boardGenerationModule)
+    GameOfLifeControlHtmlGeneration(boardGenerationModule)
 boardGenerationModule.updateBoardElement()
-const controlElements = controlHtmlGenerationModule.deriveControlElements(0) // iterationCount
+const controlElements =
+    controlHtmlGenerationModule.controlElements(0) // iterationCount
 controlElements.forEach(element => {
   rootElement.appendChild(element)
 })

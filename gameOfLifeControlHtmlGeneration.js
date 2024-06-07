@@ -1,81 +1,78 @@
 'use strict'
+import * as logic from "./gameOfLifeLogic.js"
 
-export const GameOfLifeControlHtmlGeneration = function (gameOfLifeLogicModule, boardGenerationModule) {
-  const iterationCountElementId = 'iterationCount'
+export const GameOfLifeControlHtmlGeneration = function (boardGenerationModule) {
+  //const iterationCountElementId = 'iterationCount'
+  const runButton = deriveButton('Run', handleRunClick)
+  const iterationCountElement = document.createElement('span')
+  let interval
+  let isRunning = false
 
   function renderRunStopButtonAsRun () {
-    const runButton = document.getElementById('btnRun')
-    runButton.value = 'Run'
+      runButton.value = 'Run'
   }
 
   function renderRunStopButtonAsStop () {
-    const runButton = document.getElementById('btnRun')
-    runButton.value = 'Stop'
+      runButton.value = 'Stop'
   }
 
   function updateIterationCount () {
-    const iterationCountDiv =
-          document.getElementById(iterationCountElementId)
-    iterationCountDiv.textContent = gameOfLifeLogicModule.getIterationCount()
+      iterationCountElement.textContent = logic.getIterationCount().toString()
   }
 
   function deriveRuleDescriptionElement () {
-    const rule = gameOfLifeLogicModule.getBornAndSuvivesRule()
-    const ruleText = 'Rule: B' + rule.arrBornNeighborCount.join('') + '/S' + rule.arrSurvivesNeighborCount.join('')
-    const textNode = document.createTextNode(ruleText)
-    const pElement = document.createElement('p')
-    pElement.appendChild(textNode)
-    return pElement
+      const rule = logic.getBornAndSuvivesRule()
+      const ruleText = 'Rule: B' + rule.arrBornNeighborCounts.join('') + '/S' + rule.arrSurviveNeighborCounts.join('')
+      const textNode = document.createTextNode(ruleText)
+      const pElement = document.createElement('p')
+      pElement.appendChild(textNode)
+      return pElement
   }
 
   function deriveIterationCountParagraph (iterationCount) {
-    const labelTextNode = document.createTextNode('Iteration Count:')
-    const spanElement = document.createElement('span')
-    spanElement.setAttribute('id', iterationCountElementId)
-    const countTextNode = document.createTextNode(iterationCount)
-    spanElement.appendChild(countTextNode)
-    const pElement = document.createElement('p')
-    pElement.appendChild(labelTextNode)
-    pElement.appendChild(spanElement)
-    return pElement
+      const labelTextNode = document.createTextNode('Iteration Count:')
+      const countTextNode = document.createTextNode(iterationCount.toString())
+      iterationCountElement.appendChild(countTextNode)
+      const pElement = document.createElement('p')
+      pElement.appendChild(labelTextNode)
+      pElement.appendChild(iterationCountElement)
+      return pElement
   }
 
   function deriveButton (value, fnClickHandler) {
-    const button = document.createElement('input')
-    button.setAttribute('type', 'button')
-    button.setAttribute('value', value)
-    button.addEventListener('click', fnClickHandler)
-    button.classList.add('button')
-    return button
+      const button = document.createElement('input')
+      button.setAttribute('type', 'button')
+      button.setAttribute('value', value)
+      if(fnClickHandler) {
+          button.addEventListener('click', fnClickHandler)
+      }
+      button.classList.add('button')
+      return button
   }
 
   function deriveButtonContainerElement () {
-    const advanceOneStepButton =
+      const advanceOneStepButton =
           deriveButton('Advance a step', handleAdvanceAStepClick)
-    const addRowButton = deriveButton('Add Row', handleAddRowClick)
-    const addColumnButton = deriveButton('Add Column', handleAddColumnClick)
-    const resetButton = deriveButton('Clear', handleClearClick)
-    const runButton = deriveButton('Run', handleRunClick)
-    runButton.setAttribute('id', 'btnRun')
+      const addRowButton = deriveButton('Add Row', handleAddRowClick)
+      const addColumnButton = deriveButton('Add Column', handleAddColumnClick)
+      const resetButton = deriveButton('Clear', handleClearClick)
 
-    const buttonContainerElement = document.createElement('div')
-    buttonContainerElement.appendChild(advanceOneStepButton)
-    buttonContainerElement.appendChild(addRowButton)
-    buttonContainerElement.appendChild(addColumnButton)
-    buttonContainerElement.appendChild(resetButton)
-    buttonContainerElement.appendChild(runButton)
+      const buttonContainerElement = document.createElement('div')
+      buttonContainerElement.appendChild(advanceOneStepButton)
+      buttonContainerElement.appendChild(addRowButton)
+      buttonContainerElement.appendChild(addColumnButton)
+      buttonContainerElement.appendChild(resetButton)
+      buttonContainerElement.appendChild(runButton)
 
-    return buttonContainerElement
+      return buttonContainerElement
   }
 
-  function deriveControlElements (iterationCount) {
+  function controlElements (iterationCount) {
     const ruleDescriptionElement =
           deriveRuleDescriptionElement()
     const iterationCountElement =
           deriveIterationCountParagraph(iterationCount)
-
     const buttonContainerElement = deriveButtonContainerElement()
-
     return [
       iterationCountElement,
       buttonContainerElement,
@@ -83,65 +80,59 @@ export const GameOfLifeControlHtmlGeneration = function (gameOfLifeLogicModule, 
   }
 
   // event handlers and their helper methods
-  let interval
-  let isRunning = false
-
   function advanceOneStep () {
-    gameOfLifeLogicModule.advanceOneStep()
-    boardGenerationModule.updateBoardElement()
-    updateIterationCount()
+      logic.advanceOneStep()
+      boardGenerationModule.updateBoardElement()
+      updateIterationCount()
   }
 
   function start () {
-    interval = setInterval(advanceOneStep, 1000)
-    isRunning = true
-    renderRunStopButtonAsStop()
+      interval = setInterval(advanceOneStep, 1000)
+      isRunning = true
+      renderRunStopButtonAsStop()
   }
 
   function stop () {
-    clearInterval(interval)
-    isRunning = false
-    renderRunStopButtonAsRun()
+      clearInterval(interval)
+      isRunning = false
+      renderRunStopButtonAsRun()
   }
 
   function clear () {
-    if (isRunning) {
-      stop()
-    }
-    gameOfLifeLogicModule.clearLiveCells()
-    boardGenerationModule.updateBoardElement()
+      if (isRunning) {
+          stop()
+      }
+      logic.clearLiveCells()
+      boardGenerationModule.updateBoardElement()
   }
 
   function handleAdvanceAStepClick () {
-    advanceOneStep()
+      advanceOneStep()
   }
 
   function handleAddRowClick () {
-    boardGenerationModule.addRow()
-    boardGenerationModule.updateBoardElement()
+      boardGenerationModule.addRow()
+      boardGenerationModule.updateBoardElement()
   }
 
   function handleAddColumnClick () {
-    boardGenerationModule.addColumn()
-    boardGenerationModule.updateBoardElement()
+      boardGenerationModule.addColumn()
+      boardGenerationModule.updateBoardElement()
   }
 
   function handleClearClick () {
-    clear()
+      clear()
   }
 
   function handleRunClick (e) {
-    if (isRunning) {
-      stop()
-    } else {
-      start()
-    }
+      if (isRunning) {
+          stop()
+      } else {
+          start()
+      }
   }
 
   return {
-    renderRunStopButtonAsRun,
-    renderRunStopButtonAsStop,
-    updateIterationCount,
-    deriveControlElements
+    controlElements
   }
 }

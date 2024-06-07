@@ -2,7 +2,7 @@
 
 import * as logic from "./gameOfLifeLogic.js"
 
-export const GameOfLifeBoardGeneration = function (startingBoardExtent, gameOfLifeLogicModule, boardContainerElement) {
+export const GameOfLifeBoardGeneration = function (startingBoardExtent, boardContainerElement) {
   let currentBoardExtent = startingBoardExtent
   const cellWidth = 20
   const cellHeight = cellWidth
@@ -13,11 +13,19 @@ export const GameOfLifeBoardGeneration = function (startingBoardExtent, gameOfLi
     currentBoardExtent = logic.getCellExtentThatEncompasses(currentBoardExtent, extentOfLiveCells)
   }
 
-  function generateBoardAsCanvasHtmlElement () {
-    const columnCount = currentBoardExtent.lowerRightCell.columnIndex -
+  function deriveColumnCount() {
+    return currentBoardExtent.lowerRightCell.columnIndex -
         currentBoardExtent.upperLeftCell.columnIndex + 1
-    const rowCount = currentBoardExtent.lowerRightCell.rowIndex -
+  }
+
+  function deriveRowCount() {
+    return currentBoardExtent.lowerRightCell.rowIndex -
         currentBoardExtent.upperLeftCell.rowIndex + 1
+  }
+
+  function generateBoardAsCanvasHtmlElement () {
+    const columnCount = deriveColumnCount()
+    const rowCount = deriveRowCount()
     const canvasElement = document.createElement('canvas')
     canvasElement.setAttribute('id', 'idCanvas')
     canvasElement.width = (columnCount * cellWidth) + lineBetweenCellsWidth
@@ -26,30 +34,56 @@ export const GameOfLifeBoardGeneration = function (startingBoardExtent, gameOfLi
     const ctx = canvasElement.getContext('2d')
     ctx.strokeStyle = 'blue'
     ctx.lineWidth = lineBetweenCellsWidth
-    ctx.fillStyle = 'grey'
     for (let canvasColumnIndex = 0; canvasColumnIndex < columnCount; canvasColumnIndex++) {
       for (let canvasRowIndex = 0; canvasRowIndex < rowCount; canvasRowIndex++) {
-        const xCoord = cellWidth * canvasColumnIndex + lineBetweenCellsWidth / 2
-        const yCoord = cellHeight * canvasRowIndex + lineBetweenCellsWidth / 2
+        const xCoord = lineBetweenCellsWidth / 2 + (cellWidth * canvasColumnIndex)
+        const yCoord = lineBetweenCellsWidth / 2 + (cellHeight * canvasRowIndex)
         const logicRowIndex = canvasRowIndex + currentBoardExtent.upperLeftCell.rowIndex
         const logicColumnIndex = canvasColumnIndex + currentBoardExtent.upperLeftCell.columnIndex
-        if (gameOfLifeLogicModule.isThereALiveCellAt(logicRowIndex, logicColumnIndex)) {
-          ctx.fillStyle = 'yellow'
+        if (logic.isThereALiveCellAt(logicRowIndex, logicColumnIndex)) {
+            ctx.fillStyle = 'yellow'
+        } else {
+            ctx.fillStyle = 'grey'
         }
         ctx.fillRect(xCoord, yCoord, cellWidth, cellHeight)
         ctx.strokeRect(xCoord, yCoord, cellWidth, cellHeight)
-        ctx.fillStyle = 'grey'
       }
     }
     return canvasElement
   }
 
+  function deriveRowIndexFromOffsetY(offsetY) {
+    const edgeCellHeight = cellHeight + lineBetweenCellsWidth / 2
+    const canvasHeight = (deriveRowCount() * cellHeight) + lineBetweenCellsWidth
+    const topOfBottomCellOffset = canvasHeight - edgeCellHeight
+    if (offsetY < edgeCellHeight) {
+        return currentBoardExtent.upperLeftCell.rowIndex
+    } else if (offsetY > topOfBottomCellOffset) {
+        return currentBoardExtent.lowerRightCell.rowIndex
+    } else {
+        return  Math.trunc((offsetY - edgeCellHeight) / cellHeight) + 1 + currentBoardExtent.upperLeftCell.rowIndex
+    }
+  }
+
+  function deriveColumnIndexFromOffsetX(offsetX) {
+    const edgeCellWidth = cellHeight + lineBetweenCellsWidth / 2
+    const canvasWidth = (deriveColumnCount() * cellWidth) + lineBetweenCellsWidth
+    const leftOfRightCellOffset = canvasWidth - edgeCellWidth
+    if (offsetX < edgeCellWidth) {
+        return currentBoardExtent.upperLeftCell.columnIndex
+    } else if (offsetX > leftOfRightCellOffset) {
+        return currentBoardExtent.lowerRightCell.columnIndex
+    } else {
+        return  Math.trunc((offsetX - edgeCellWidth) / cellWidth) + 1 + currentBoardExtent.upperLeftCell.columnIndex
+    }
+  }
+
   function handleCanvasClick (e) {
     const coordinates = {
-      rowIndex: Math.trunc(e.offsetY / (cellHeight + lineBetweenCellsWidth / 2)) + currentBoardExtent.upperLeftCell.rowIndex,
-      columnIndex: Math.trunc(e.offsetX / (cellWidth + lineBetweenCellsWidth / 2)) + currentBoardExtent.upperLeftCell.columnIndex
+      rowIndex: deriveRowIndexFromOffsetY(e.offsetY),
+      columnIndex: deriveColumnIndexFromOffsetX(e.offsetX)
     }
-    gameOfLifeLogicModule.toggleCellLiveness(
+    logic.toggleCellLiveness(
       coordinates.rowIndex,
       coordinates.columnIndex)
     updateBoardElement()

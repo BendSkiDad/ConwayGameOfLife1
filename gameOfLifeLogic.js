@@ -49,6 +49,33 @@ export function getCellExtentThatEncompasses(first, second) {
 
 let liveCells = []
 let iterationCount = 0
+let bornAndSurviveRule = {
+    arrBornNeighborCounts: [3],
+    arrSurviveNeighborCounts: [2,3]
+}
+
+export function liveCellsAsJSON () {
+  return JSON.stringify({
+      liveCells: liveCells })
+}
+
+export function addSimpleGliderGoingUpAndLeft (rowIndex, columnIndex) {
+  liveCells.push(
+    new Cell(rowIndex, columnIndex),
+    new Cell(rowIndex, columnIndex + 1),
+    new Cell(rowIndex, columnIndex + 2),
+    new Cell(rowIndex + 1, columnIndex),
+    new Cell(rowIndex + 2, columnIndex + 1))
+}
+
+export function addSimpleGliderGoingDownAndRight (rowIndex, columnIndex) {
+  liveCells.push(
+    new Cell(rowIndex, columnIndex + 1),
+    new Cell(rowIndex + 1, columnIndex + 2),
+    new Cell(rowIndex + 2, columnIndex),
+    new Cell(rowIndex + 2, columnIndex + 1),
+    new Cell(rowIndex + 2, columnIndex + 2))
+}
 
 export function getExtentOfLiveCells () {
   const rowIndexes = liveCells.map(function (cell) {
@@ -68,95 +95,69 @@ export function getExtentOfLiveCells () {
   return rc
 }
 
-export const TwoDimensionalGameOfLifeLogic = function (arrBornNeighborCount, arrSurvivesNeighborCount) {
+export function isThereALiveCellAt (rowIndex, columnIndex) {
+  return liveCells.some(function(liveCell) {
+    return liveCell.rowIndex === rowIndex && liveCell.columnIndex === columnIndex
+  })
+}
 
-  function addSimpleGliderGoingUpAndLeft (rowIndex, columnIndex) {
-    liveCells.push(
-      new Cell(rowIndex, columnIndex),
-      new Cell(rowIndex, columnIndex + 1),
-      new Cell(rowIndex, columnIndex + 2),
-      new Cell(rowIndex + 1, columnIndex),
-      new Cell(rowIndex + 2, columnIndex + 1))
-  }
+function deriveNumberOfLiveNeighbors (rowIndex, columnIndex) {
+  const liveNeighborCells = liveCells.filter(function (liveCell) {
+    return liveCell.isNeighborOf(rowIndex, columnIndex) && !liveCell.isMe(rowIndex, columnIndex)
+  })
+  return liveNeighborCells.length
+}
 
-  function addSimpleGliderGoingDownAndRight (rowIndex, columnIndex) {
-    liveCells.push(
-      new Cell(rowIndex, columnIndex + 1),
-      new Cell(rowIndex + 1, columnIndex + 2),
-      new Cell(rowIndex + 2, columnIndex),
-      new Cell(rowIndex + 2, columnIndex + 1),
-      new Cell(rowIndex + 2, columnIndex + 2))
-  }
+function deriveNextSetOfLiveCellsFromCurrentLiveCells () {
+  const extentOfLiveCellsExpandedBy1 =
+      incrementCellExtent(getExtentOfLiveCells(), 1)
 
-  function isThereALiveCellAt (rowIndex, columnIndex) {
-    return liveCells.some(function(liveCell) {
-      return liveCell.rowIndex === rowIndex && liveCell.columnIndex === columnIndex
-    })
-  }
-
-  function deriveNumberOfLiveNeighbors (rowIndex, columnIndex) {
-    const liveNeighborCells = liveCells.filter(function (liveCell) {
-      return liveCell.isNeighborOf(rowIndex, columnIndex) && !liveCell.isMe(rowIndex, columnIndex)
-    })
-    return liveNeighborCells.length
-  }
-
-  function deriveNextSetOfLiveCellsFromCurrentLiveCells () {
-    // find indexes just outside the live cells
-    const extentOfLiveCellsExpandedBy1 = incrementCellExtent(getExtentOfLiveCells(), 1)
-
-    const newLiveCells = []
-    for (let rowIndex = extentOfLiveCellsExpandedBy1.upperLeftCell.rowIndex; rowIndex <= extentOfLiveCellsExpandedBy1.lowerRightCell.rowIndex; rowIndex++) {
-      for (let columnIndex = extentOfLiveCellsExpandedBy1.upperLeftCell.columnIndex; columnIndex <= extentOfLiveCellsExpandedBy1.lowerRightCell.columnIndex; columnIndex++) {
-        const liveNeighborCount =
-          deriveNumberOfLiveNeighbors(rowIndex, columnIndex)
-        if ((isThereALiveCellAt(rowIndex, columnIndex) && arrSurvivesNeighborCount.includes(liveNeighborCount)) || arrBornNeighborCount.includes(liveNeighborCount)) {
-          newLiveCells.push(new Cell(rowIndex, columnIndex))
-        }
+  const newLiveCells = []
+  for (let rowIndex = extentOfLiveCellsExpandedBy1.upperLeftCell.rowIndex; rowIndex <= extentOfLiveCellsExpandedBy1.lowerRightCell.rowIndex; rowIndex++) {
+    for (let columnIndex = extentOfLiveCellsExpandedBy1.upperLeftCell.columnIndex; columnIndex <= extentOfLiveCellsExpandedBy1.lowerRightCell.columnIndex; columnIndex++) {
+      const liveNeighborCount =
+        deriveNumberOfLiveNeighbors(rowIndex, columnIndex)
+      if ((isThereALiveCellAt(rowIndex, columnIndex) &&
+           bornAndSurviveRule.arrSurviveNeighborCounts.includes(liveNeighborCount)
+          ) ||
+          bornAndSurviveRule.arrBornNeighborCounts.includes(liveNeighborCount)
+      ) {
+        newLiveCells.push(new Cell(rowIndex, columnIndex))
       }
     }
-    return newLiveCells
   }
+  return newLiveCells
+}
 
-  function advanceOneStep () {
-    liveCells = deriveNextSetOfLiveCellsFromCurrentLiveCells()
-    iterationCount++
-  }
+export function advanceOneStep () {
+  liveCells = deriveNextSetOfLiveCellsFromCurrentLiveCells()
+  iterationCount++
+}
 
-  function toggleCellLiveness (rowIndex, columnIndex) {
-    const index = liveCells.findIndex(function (liveCell) {
-      return liveCell.isMe(rowIndex, columnIndex)
-    })
-    if (index === -1) {
-      liveCells.push(new Cell(rowIndex, columnIndex))
-    } else {
-      liveCells.splice(index, 1)
-    }
-  }
-
-  function clearLiveCells () {
-    liveCells = []
-  }
-
-  function getIterationCount () {
-    return iterationCount
-  }
-
-  function getBornAndSuvivesRule () {
-    return {
-      arrBornNeighborCount,
-      arrSurvivesNeighborCount
-    }
-  }
-
-  return {
-    addSimpleGliderGoingUpAndLeft,
-    addSimpleGliderGoingDownAndRight,
-    isThereALiveCellAt,
-    advanceOneStep,
-    toggleCellLiveness,
-    clearLiveCells,
-    getIterationCount,
-    getBornAndSuvivesRule
+export function toggleCellLiveness (rowIndex, columnIndex) {
+  const index = liveCells.findIndex(function (liveCell) {
+    return liveCell.isMe(rowIndex, columnIndex)
+  })
+  if (index === -1) {
+    liveCells.push(new Cell(rowIndex, columnIndex))
+  } else {
+    liveCells.splice(index, 1)
   }
 }
+
+export function clearLiveCells () {
+  liveCells = []
+}
+
+export function getIterationCount () {
+  return iterationCount
+}
+
+export function getBornAndSuvivesRule () {
+  return bornAndSurviveRule
+}
+
+export function setBornAndSurviveRule (rule) {
+  bornAndSurviveRule = rule
+}
+

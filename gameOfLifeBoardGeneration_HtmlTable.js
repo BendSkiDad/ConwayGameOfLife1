@@ -1,7 +1,8 @@
 'use strict'
 
-//todo: come back and test this and make it mirror the type script and the js canvas version
-export const GameOfLifeBoardGeneration = function (startingBoardExtent, gameOfLifeLogicModule, boardContainerElement) {
+import * as logic from "./gameOfLifeLogic.js"
+
+export const GameOfLifeBoardGeneration = function (startingBoardExtent, boardContainerElement) {
   let currentBoardExtent = startingBoardExtent
 
   const rowIndexAttributeName = 'rowIndex'
@@ -64,7 +65,7 @@ export const GameOfLifeBoardGeneration = function (startingBoardExtent, gameOfLi
       tdElement.setAttribute(columnIndexAttributeName, columnIndex)
       tdElement.classList.add(gameOfLifeCellCSSClassToken)
       tdElement.addEventListener('click', handleCellClick)
-      if (gameOfLifeLogicModule.isThereALiveCellAt(rowIndex, columnIndex)) {
+      if (logic.isThereALiveCellAt(rowIndex, columnIndex)) {
         tdElement.setAttribute(liveAttributeName, '')
         tdElement.classList.add(liveCellCSSClassToken)
       } else {
@@ -90,6 +91,14 @@ export const GameOfLifeBoardGeneration = function (startingBoardExtent, gameOfLi
     return tableElement
   }
 
+  function handleCellClick (e) {
+    const coordinates = getCoordinatesFromClickEventTarget(e)
+    logic.toggleCellLiveness(
+      coordinates.rowIndex,
+      coordinates.columnIndex)
+    updateBoardElement()
+  }
+
   function addRow () {
     updateCurrentBoardExtentToReflectLiveCells()
     currentBoardExtent.lowerRightCell.rowIndex += 1
@@ -104,14 +113,6 @@ export const GameOfLifeBoardGeneration = function (startingBoardExtent, gameOfLi
     updateCurrentBoardExtentToReflectLiveCells()
     const boardAsHtmlTableElement = generateBoardAsTableHtmlElementFrom()
     boardContainerElement.replaceChildren(boardAsHtmlTableElement)
-  }
-
-  function handleCellClick (e) {
-    const coordinates = getCoordinatesFromClickEventTarget(e)
-    gameOfLifeLogicModule.toggleCellLiveness(
-      coordinates.rowIndex,
-      coordinates.columnIndex)
-    updateBoardElement()
   }
 
   return {
