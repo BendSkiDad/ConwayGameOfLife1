@@ -1,7 +1,7 @@
 'use strict'
 import * as logic from "./gameOfLifeLogic.js"
-import { GameOfLifeBoardGeneration } from './gameOfLifeBoardGeneration_HtmlTable.js'
-//import { GameOfLifeBoardGeneration } from './gameOfLifeBoardGeneration_Canvas.js'
+//import { GameOfLifeBoardGeneration } from './gameOfLifeBoardGeneration_HtmlTable.js'
+import { GameOfLifeBoardGeneration } from './gameOfLifeBoardGeneration_Canvas.js'
 import { GameOfLifeControlHtmlGeneration } from './gameOfLifeControlHtmlGeneration.js'
 
 // create and add a container element for the board
