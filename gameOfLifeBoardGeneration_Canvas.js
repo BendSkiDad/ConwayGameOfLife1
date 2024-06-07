@@ -1,42 +1,27 @@
 'use strict'
 
-export const GameOfLifeBoardGeneration = function (gameOfLifeLogicModule, startingBoardCoordinates, boardContainerElement) {
-  const currentBoardOuterCoordinates = startingBoardCoordinates
-  const cellWidth = 13
-  const cellHeight = 13
+import * as logic from "./gameOfLifeLogic.js"
+
+export const GameOfLifeBoardGeneration = function (startingBoardExtent, gameOfLifeLogicModule, boardContainerElement) {
+  let currentBoardExtent = startingBoardExtent
+  const cellWidth = 20
+  const cellHeight = cellWidth
   const lineBetweenCellsWidth = 1
 
-  function updateCurrentBoardOuterCoordinatesToReflectLiveCells () {
-    const outerLiveCellCoordinates = gameOfLifeLogicModule.outerCoordinatesOfLiveCells()
-
-    // expand currrent board outer coordinates if necessary
-    currentBoardOuterCoordinates.minRowIndex =
-      Math.min(
-        currentBoardOuterCoordinates.minRowIndex,
-        outerLiveCellCoordinates.minRowIndex)
-    currentBoardOuterCoordinates.minColumnIndex =
-      Math.min(
-        currentBoardOuterCoordinates.minColumnIndex,
-        outerLiveCellCoordinates.minColumnIndex)
-    currentBoardOuterCoordinates.maxRowIndex =
-      Math.max(
-        currentBoardOuterCoordinates.maxRowIndex,
-        outerLiveCellCoordinates.maxRowIndex)
-    currentBoardOuterCoordinates.maxColumnIndex =
-      Math.max(
-        currentBoardOuterCoordinates.maxColumnIndex,
-        outerLiveCellCoordinates.maxColumnIndex)
+  function updateCurrentBoardExtentToReflectLiveCells () {
+    const extentOfLiveCells = logic.getExtentOfLiveCells()
+    currentBoardExtent = logic.getCellExtentThatEncompasses(currentBoardExtent, extentOfLiveCells)
   }
 
-  function generateBoardAsCanvasHtmlElementFrom () {
+  function generateBoardAsCanvasHtmlElement () {
+    const columnCount = currentBoardExtent.lowerRightCell.columnIndex -
+        currentBoardExtent.upperLeftCell.columnIndex + 1
+    const rowCount = currentBoardExtent.lowerRightCell.rowIndex -
+        currentBoardExtent.upperLeftCell.rowIndex + 1
     const canvasElement = document.createElement('canvas')
-    const columnCount = currentBoardOuterCoordinates.maxColumnIndex -
-      currentBoardOuterCoordinates.minColumnIndex + 1
-    const rowCount = currentBoardOuterCoordinates.maxRowIndex -
-      currentBoardOuterCoordinates.minRowIndex + 1
     canvasElement.setAttribute('id', 'idCanvas')
-    canvasElement.width = columnCount * cellWidth + columnCount - 1
-    canvasElement.height = rowCount * cellHeight + rowCount - 1
+    canvasElement.width = (columnCount * cellWidth) + lineBetweenCellsWidth
+    canvasElement.height = (rowCount * cellHeight) + lineBetweenCellsWidth
     canvasElement.addEventListener('click', handleCanvasClick)
     const ctx = canvasElement.getContext('2d')
     ctx.strokeStyle = 'blue'
@@ -44,46 +29,46 @@ export const GameOfLifeBoardGeneration = function (gameOfLifeLogicModule, starti
     ctx.fillStyle = 'grey'
     for (let canvasColumnIndex = 0; canvasColumnIndex < columnCount; canvasColumnIndex++) {
       for (let canvasRowIndex = 0; canvasRowIndex < rowCount; canvasRowIndex++) {
-        const xCoord = canvasColumnIndex * (cellWidth + 1)
-        const yCoord = canvasRowIndex * (cellHeight + 1)
-        ctx.strokeRect(xCoord, yCoord, cellWidth, cellHeight)
-        const logicRowIndex = canvasRowIndex + currentBoardOuterCoordinates.minRowIndex
-        const logicColumnIndex = canvasColumnIndex + currentBoardOuterCoordinates.minColumnIndex
+        const xCoord = cellWidth * canvasColumnIndex + lineBetweenCellsWidth / 2
+        const yCoord = cellHeight * canvasRowIndex + lineBetweenCellsWidth / 2
+        const logicRowIndex = canvasRowIndex + currentBoardExtent.upperLeftCell.rowIndex
+        const logicColumnIndex = canvasColumnIndex + currentBoardExtent.upperLeftCell.columnIndex
         if (gameOfLifeLogicModule.isThereALiveCellAt(logicRowIndex, logicColumnIndex)) {
           ctx.fillStyle = 'yellow'
         }
         ctx.fillRect(xCoord, yCoord, cellWidth, cellHeight)
+        ctx.strokeRect(xCoord, yCoord, cellWidth, cellHeight)
         ctx.fillStyle = 'grey'
       }
     }
     return canvasElement
   }
 
-  function addRow () {
-    updateCurrentBoardOuterCoordinatesToReflectLiveCells()
-    currentBoardOuterCoordinates.maxRowIndex += 1
-  }
-
-  function addColumn () {
-    updateCurrentBoardOuterCoordinatesToReflectLiveCells()
-    currentBoardOuterCoordinates.maxColumnIndex += 1
-  }
-
-  function updateBoardElement () {
-    updateCurrentBoardOuterCoordinatesToReflectLiveCells()
-    const boardAsHtmlCanvasElement = generateBoardAsCanvasHtmlElementFrom()
-    boardContainerElement.replaceChildren(boardAsHtmlCanvasElement)
-  }
-
   function handleCanvasClick (e) {
     const coordinates = {
-      rowIndex: Math.trunc(e.offsetY / (cellHeight + lineBetweenCellsWidth)) + currentBoardOuterCoordinates.minRowIndex,
-      columnIndex: Math.trunc(e.offsetX / (cellWidth + lineBetweenCellsWidth)) + currentBoardOuterCoordinates.minColumnIndex
+      rowIndex: Math.trunc(e.offsetY / (cellHeight + lineBetweenCellsWidth / 2)) + currentBoardExtent.upperLeftCell.rowIndex,
+      columnIndex: Math.trunc(e.offsetX / (cellWidth + lineBetweenCellsWidth / 2)) + currentBoardExtent.upperLeftCell.columnIndex
     }
     gameOfLifeLogicModule.toggleCellLiveness(
       coordinates.rowIndex,
       coordinates.columnIndex)
     updateBoardElement()
+  }
+
+  function addRow () {
+    updateCurrentBoardExtentToReflectLiveCells()
+    currentBoardExtent.lowerRightCell.rowIndex += 1
+  }
+
+  function addColumn () {
+    updateCurrentBoardExtentToReflectLiveCells()
+    currentBoardExtent.lowerRightCell.columnIndex += 1
+  }
+
+  function updateBoardElement () {
+    updateCurrentBoardExtentToReflectLiveCells()
+    const boardAsHtmlCanvasElement = generateBoardAsCanvasHtmlElement()
+    boardContainerElement.replaceChildren(boardAsHtmlCanvasElement)
   }
 
   return {

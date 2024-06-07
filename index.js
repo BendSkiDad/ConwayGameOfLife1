@@ -1,5 +1,5 @@
 'use strict'
-
+import * as logic from "./gameOfLifeLogic.js"
 import { TwoDimensionalGameOfLifeLogic } from './gameOfLifeLogic.js'
 // import { GameOfLifeBoardGeneration } from './gameOfLifeBoardGeneration_HtmlTable.js'
 import { GameOfLifeBoardGeneration } from './gameOfLifeBoardGeneration_Canvas.js'
@@ -16,18 +16,16 @@ const bornNeighborCounts = [3]
 const survivesNeighborCounts = [2, 3]
 const logicModule =
   TwoDimensionalGameOfLifeLogic(bornNeighborCounts, survivesNeighborCounts)
-logicModule.clearLiveCells()
+
+  logicModule.clearLiveCells()
 logicModule.addSimpleGliderGoingUpAndLeft(2, 2)
 logicModule.addSimpleGliderGoingDownAndRight(7, 7)
-const startingBoardCoordinates = {
-  minRowIndex: 1,
-  minColumnIndex: 1,
-  maxRowIndex: 10,
-  maxColumnIndex: 10
-}
 
+const startingUpperLeftCell = new logic.Cell(1, 1)
+const startingLowerRightCell = new logic.Cell(10, 20)
+const startingBoardExtent = new logic.CellExtent(startingUpperLeftCell, startingLowerRightCell)
 const boardGenerationModule =
-  GameOfLifeBoardGeneration(logicModule, startingBoardCoordinates, boardContainerElement)
+  GameOfLifeBoardGeneration(startingBoardExtent, logicModule, boardContainerElement)
 const controlHtmlGenerationModule =
     GameOfLifeControlHtmlGeneration(logicModule, boardGenerationModule)
 boardGenerationModule.updateBoardElement()

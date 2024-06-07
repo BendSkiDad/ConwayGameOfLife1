@@ -1,35 +1,18 @@
 'use strict'
 
-export const GameOfLifeBoardGeneration = function (gameOfLifeLogicModule, startingBoardCoordinates, boardContainerElement) {
+//todo: come back and test this and make it mirror the type script and the js canvas version
+export const GameOfLifeBoardGeneration = function (startingBoardExtent, gameOfLifeLogicModule, boardContainerElement) {
+  let currentBoardExtent = startingBoardExtent
+
   const rowIndexAttributeName = 'rowIndex'
   const columnIndexAttributeName = 'columnIndex'
   const liveAttributeName = 'live'
   const liveCellCSSClassToken = 'liveCell'
   const gameOfLifeCellCSSClassToken = 'cell'
 
-  const currentBoardOuterCoordinates = startingBoardCoordinates
-
-  function updateCurrentBoardOuterCoordinatesToReflectLiveCells () {
-    const outerLiveCellCoordinates =
-      gameOfLifeLogicModule.outerCoordinatesOfLiveCells()
-
-    // expand currrent board outer coordinates if necessary
-    currentBoardOuterCoordinates.minRowIndex =
-      Math.min(
-        currentBoardOuterCoordinates.minRowIndex,
-        outerLiveCellCoordinates.minRowIndex)
-    currentBoardOuterCoordinates.minColumnIndex =
-      Math.min(
-        currentBoardOuterCoordinates.minColumnIndex,
-        outerLiveCellCoordinates.minColumnIndex)
-    currentBoardOuterCoordinates.maxRowIndex =
-      Math.max(
-        currentBoardOuterCoordinates.maxRowIndex,
-        outerLiveCellCoordinates.maxRowIndex)
-    currentBoardOuterCoordinates.maxColumnIndex =
-      Math.max(
-        currentBoardOuterCoordinates.maxColumnIndex,
-        outerLiveCellCoordinates.maxColumnIndex)
+  function updateCurrentBoardExtentToReflectLiveCells () {
+    const extentOfLiveCells = logic.getExtentOfLiveCells()
+    currentBoardExtent = logic.getCellExtentThatEncompasses(currentBoardExtent, extentOfLiveCells)
   }
 
   function getRowIndexFrom (cellTDElement) {
@@ -75,7 +58,7 @@ export const GameOfLifeBoardGeneration = function (gameOfLifeLogicModule, starti
     tdElement.appendChild(textNode)
     const rc = document.createElement('tr')
     rc.appendChild(tdElement)
-    for (let columnIndex = currentBoardOuterCoordinates.minColumnIndex; columnIndex <= currentBoardOuterCoordinates.maxColumnIndex; columnIndex++) {
+    for (let columnIndex = currentBoardExtent.upperLeftCell.columnIndex; columnIndex <= currentBoardExtent.lowerRightCell.columnIndex; columnIndex++) {
       const tdElement = document.createElement('td')
       tdElement.setAttribute(rowIndexAttributeName, rowIndex)
       tdElement.setAttribute(columnIndexAttributeName, columnIndex)
@@ -97,10 +80,10 @@ export const GameOfLifeBoardGeneration = function (gameOfLifeLogicModule, starti
     const tableElement = document.createElement('table')
     const boardHeaderTRElement =
       generateBoardHeaderTRElementFrom(
-        currentBoardOuterCoordinates.minColumnIndex,
-        currentBoardOuterCoordinates.maxColumnIndex)
+        currentBoardExtent.upperLeftCell.columnIndex,
+        currentBoardExtent.lowerRightCell.columnIndex)
     tableElement.appendChild(boardHeaderTRElement)
-    for (let rowIndex = currentBoardOuterCoordinates.minRowIndex; rowIndex <= currentBoardOuterCoordinates.maxRowIndex; rowIndex++) {
+    for (let rowIndex = currentBoardExtent.upperLeftCell.rowIndex; rowIndex <= currentBoardExtent.lowerRightCell.rowIndex; rowIndex++) {
       const rowElement = generateRowElementFrom(rowIndex)
       tableElement.appendChild(rowElement)
     }
@@ -108,17 +91,17 @@ export const GameOfLifeBoardGeneration = function (gameOfLifeLogicModule, starti
   }
 
   function addRow () {
-    updateCurrentBoardOuterCoordinatesToReflectLiveCells()
-    currentBoardOuterCoordinates.maxRowIndex += 1
+    updateCurrentBoardExtentToReflectLiveCells()
+    currentBoardExtent.lowerRightCell.rowIndex += 1
   }
 
   function addColumn () {
-    updateCurrentBoardOuterCoordinatesToReflectLiveCells()
-    currentBoardOuterCoordinates.maxColumnIndex += 1
+    updateCurrentBoardExtentToReflectLiveCells()
+    currentBoardExtent.lowerRightCell.columnIndex += 1
   }
 
   function updateBoardElement () {
-    updateCurrentBoardOuterCoordinatesToReflectLiveCells()
+    updateCurrentBoardExtentToReflectLiveCells()
     const boardAsHtmlTableElement = generateBoardAsTableHtmlElementFrom()
     boardContainerElement.replaceChildren(boardAsHtmlTableElement)
   }
